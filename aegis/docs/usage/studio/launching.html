@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Running Tests &mdash; Aegis Platform 0.2.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Aegis Platform 0.2.0 documentation" href="../../index.html" />
+    <link rel="up" title="The Studio" href="studio.html" />
+    <link rel="next" title="The Console" href="../console/console.html" />
+    <link rel="prev" title="Adding procedures" href="procedures.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../console/console.html" title="The Console"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="procedures.html" title="Adding procedures"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">Aegis Platform 0.2.0 documentation</a> &raquo;</li>
+          <li><a href="../usage.html" >Aegis™ usage</a> &raquo;</li>
+          <li><a href="studio.html" accesskey="U">The Studio</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="running-tests">
+<h1>Running Tests<a class="headerlink" href="#running-tests" title="Permalink to this headline">¶</a></h1>
+<p>You can launch a suite by right clicking on a test suite and selecting <em>Open</em>.</p>
+<img alt="../../_images/run_suite.jpg" src="../../_images/run_suite.jpg" />
+<p>This action launches an independent test window with a list box of all the tests in the suite.  By default, all procedures are
+enabled to run in sequential order. You can disable individual test procedures by right clicking and selecting <em>Disable</em>. Clicking
+the <em>Run</em> button initiates the test sequence. You cannot adjust any parameters will the tests are running.</p>
+<div class="section" id="log-window">
+<h2>Log Window<a class="headerlink" href="#log-window" title="Permalink to this headline">¶</a></h2>
+<p>The top panel is a running log with a built-in protocol decoder. You can right-click the log window to see available options.</p>
+<img alt="../../_images/logging.jpg" src="../../_images/logging.jpg" />
+<ul class="simple">
+<li>Pause - Pause the window so that contents are not overwritten. This action does not pause the test itself.</li>
+<li>Resume - Resume logging to the window.</li>
+<li>Clear - Clear the log window contents.</li>
+<li>Copy to Clipboard - Save the contents to the clipboard where they can be pasted into text files.</li>
+</ul>
+<p>Double-clicking the log window toggles the pauses or resumes logging. A paused window displays a red border.</p>
+</div>
+<div class="section" id="procedure-info">
+<h2>Procedure Info<a class="headerlink" href="#procedure-info" title="Permalink to this headline">¶</a></h2>
+<p>An icon is displayed in the list box for each test procedure indicating its current state.</p>
+<img alt="../../_images/progress_icons.jpg" src="../../_images/progress_icons.jpg" />
+<ul class="simple">
+<li>The first column displays the current state of the procedure. <em>{ Pending, Running, Failed, Canceled, Success }</em></li>
+<li>You can exclude individual tests from the test sequence by right-clicking and selecting <em>Disable</em>.</li>
+<li>The user supplied name and module-unique <em>Id</em> field are displayed for reference.</li>
+<li>The final column, <em>Params</em>, displays any non-default settings. This includes overridden module/channel settings.</li>
+</ul>
+<p>You can override procedure settings for each test by right-clicking on its row and selecting <em>Options</em>. <strong>Changing settings in the test window does
+not modify the values in the XML configuration</strong>.  If you want to permanently change settings, you must do this from the main form.</p>
+</div>
+<div class="section" id="progress-indicators">
+<h2>Progress Indicators<a class="headerlink" href="#progress-indicators" title="Permalink to this headline">¶</a></h2>
+<p>There are a number of indicators of progress available.  While a test is running, a progress bar is updated that displays the current test case#/total,
+current tests/sec, and an estimated time to completion.</p>
+<img alt="../../_images/progress.jpg" src="../../_images/progress.jpg" />
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/aegis_emblem.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Running Tests</a><ul>
+<li><a class="reference internal" href="#log-window">Log Window</a></li>
+<li><a class="reference internal" href="#procedure-info">Procedure Info</a></li>
+<li><a class="reference internal" href="#progress-indicators">Progress Indicators</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="procedures.html"
+                        title="previous chapter">Adding procedures</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../console/console.html"
+                        title="next chapter">The Console</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/usage/studio/launching.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../console/console.html" title="The Console"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="procedures.html" title="Adding procedures"
+             >previous</a> |</li>
+        <li><a href="../../index.html">Aegis Platform 0.2.0 documentation</a> &raquo;</li>
+          <li><a href="../usage.html" >Aegis™ usage</a> &raquo;</li>
+          <li><a href="studio.html" >The Studio</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014-2015, Automatak LLC.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

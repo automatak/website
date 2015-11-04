@@ -1,0 +1,42 @@
+.. include:: ../symbols.txt
+
+============================
+Installation
+============================
+
+|Aegis| is distributed as a windows MSI installer. The requirements for installation are as follows:
+
+* Windows Vista, 7, 8, or 10
+* .NET runtime 4.0 or greater (not installed by installer) 
+* 512 MB RAM
+* |Aegis| will not install or run in a virtual machine
+
+By default, the installer will choose a directory like the following for the installation path.
+
+.. code-block:: bash
+   
+   C:\Program Files (x86)\Automatak\Aegis Fuzzer
+
+The executables are installed in the *bin* sub-directory of this folder. After a successful installation you should be able to 
+run the AegisStudio link created in your start menu's program files *All Programs >> Automatak >> Aegis Fuzzer >> AegisStudio*.
+
+If you have never installed a license, or your license is no longer invalid, you should see the licensing splash screen:
+
+.. image:: ../img/license_fail_screen.jpg
+
+----------------------------
+Licensing
+----------------------------
+
+Aegis is distributed and licensed under a subscription model. Per-seat licenses are bound to particular machines via a combination
+of hardware attributes. To license your Aegis installation, follow these steps:
+
+1) Install |Aegis| and run AegisStudio
+2) When the license splash screen appears, generate a hardware ID file (hid) and save it somewhere.
+3) Email the hardware ID to **licensing@automatak.com** along with your customer info.
+4) Place the license file in the reply in the **bin** sub-directory of your |Aegis| installation.
+
+Your |Aegis| installation will now work for the term of your subscription. You will receive a warning 2 weeks prior to the expiration
+of your subscription to get a new license file.
+
+Note: Both the Studio and the Console runners use the same licensing mechanism.

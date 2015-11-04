@@ -1,0 +1,16 @@
+
+.. include:: ../../symbols.txt
+
+=============================
+Procedures
+=============================
+
+* **pdu-request** - Slave PDU request
+
+Sends a large number of malformed and unexpected PDUs to a slave. Can be re-run with multiple seeds.
+
+* **pdu-response** - Master PDU response
+
+Sends a malformed or unexpected response after each request from the master. This procedure should be run for each request type. Most Modbus masters allow polls
+to be configured at a arbitrarily high rate. At may not be possible to test write coil/register functionality any way other than manually without the source code.
+   

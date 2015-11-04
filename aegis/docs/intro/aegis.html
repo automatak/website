@@ -1,0 +1,170 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Fuzzing with Aegis™ &mdash; Aegis Platform 0.2.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="top" title="Aegis Platform 0.2.0 documentation" href="../index.html" />
+    <link rel="next" title="Complementary tools" href="tools.html" />
+    <link rel="prev" title="What is fuzzing?" href="fuzzing.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="tools.html" title="Complementary tools"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="fuzzing.html" title="What is fuzzing?"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Aegis Platform 0.2.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="fuzzing-with-aegis">
+<h1>Fuzzing with Aegis™<a class="headerlink" href="#fuzzing-with-aegis" title="Permalink to this headline">¶</a></h1>
+<p>Aegis™ is a set of fuzzing test cases for ICS/SCADA protocols. The tests are written using several different methodologies to enhance test coverage:</p>
+<ul class="simple">
+<li>modeling of the protocol grammars</li>
+<li>analysis of the protocol specifications themselves</li>
+<li>brute-force (but-repeatable) randomness within appropriate encapsulation</li>
+</ul>
+<p>It combines aspects of generational and mutational fuzzing to provide deep coverage of the target software.</p>
+<div class="section" id="generic-concepts">
+<h2>Generic concepts<a class="headerlink" href="#generic-concepts" title="Permalink to this headline">¶</a></h2>
+<p>Aegis™ uses a plug-in architecture internally so that protocol modules and test cases can be easily added to the platform. For the user, this means
+that the generic concepts you learn for one module are applicable to another. These concepts are the same whether you are using the console or the studio (GUI).</p>
+<ul class="simple">
+<li><strong>Modules</strong> are collections of test procedures for a single protocol. They may provide client and server test procedures, or these may be broken out into separate modules. Modules are also the lowest level at which the software is licensed.</li>
+<li><strong>Procedures</strong> are sequences of test cases that exercise a specific aspect or layer of a protocol. They range in size from a handful of frames to hundreds of thousands.</li>
+<li><strong>Test cases</strong> are a single test frame and health check sequence tied to a numeric identifier. Test cases are described in more detail below.</li>
+<li><strong>Health checks</strong> are known valid messages for the protocol under test that are interleaved in the test sequence to verify that the target hasn&#8217;t crashed.</li>
+</ul>
+</div>
+<div class="section" id="test-flow">
+<h2>Test flow<a class="headerlink" href="#test-flow" title="Permalink to this headline">¶</a></h2>
+<p>A single test case consists of a test message, preceded or followed by one more <em>health checks</em>.</p>
+<p>&lt;&#8212;&#8212;&gt; optional health check(s)</p>
+<p>=======&gt; test message</p>
+<p>&lt;&#8212;&#8212;&gt; optional health check(s)</p>
+<p>This strategy will typically help the tester identify the exact test case that caused the target to fail. Sometimes, more complex bugs that involve
+subtle memory corruptions or non-deterministic behavior will require the use of a debugger or companion tooling as described in another section. Future versions
+of Aegis may &#8220;close the loop&#8221; with some of these application monitors to provide more direct feedback on fault analysis to the fuzzer.</p>
+</div>
+<div class="section" id="test-case-ids">
+<h2>Test case ids<a class="headerlink" href="#test-case-ids" title="Permalink to this headline">¶</a></h2>
+<p>Test cases are referred to by their incrementing <em>numeric id</em>. This id starts at zero, and increments to the number of the test cases in the procedure (minus one). You can skip to a
+particular test case at any time using the <em>start</em> parameter in the studio or console. When a start value is supplied, the fuzzer spins through the seeded random number generator and
+all of the test frames quickly without transmitting them. This ensures that you get the exact same frame within the procedure as if you had run through all the preceding tests.</p>
+<p>Other configurable generic test options are described in the studio section of the documentation.</p>
+</div>
+<div class="section" id="communications">
+<h2>Communications<a class="headerlink" href="#communications" title="Permalink to this headline">¶</a></h2>
+<p>Aegis uses an abstract channel interface internally. Tests are unaware of how they are communicating with the target. You need to refer to your specific protocol
+and ensure that you have configured the communications appropriately. This release supports the following channels:</p>
+<ul class="simple">
+<li>TCP client (default)</li>
+<li>TCP server</li>
+<li>serial</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/aegis_emblem.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Fuzzing with Aegis™</a><ul>
+<li><a class="reference internal" href="#generic-concepts">Generic concepts</a></li>
+<li><a class="reference internal" href="#test-flow">Test flow</a></li>
+<li><a class="reference internal" href="#test-case-ids">Test case ids</a></li>
+<li><a class="reference internal" href="#communications">Communications</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="fuzzing.html"
+                        title="previous chapter">What is fuzzing?</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tools.html"
+                        title="next chapter">Complementary tools</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/intro/aegis.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="tools.html" title="Complementary tools"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="fuzzing.html" title="What is fuzzing?"
+             >previous</a> |</li>
+        <li><a href="../index.html">Aegis Platform 0.2.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014-2015, Automatak LLC.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

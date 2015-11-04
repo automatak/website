@@ -1,0 +1,36 @@
+
+.. include:: ../../symbols.txt
+
+=============================
+Parameters
+=============================
+
+Parameters differ for the slave and master tests.
+
+**Slave**
+
+* **unitid** -  The unit id of the modbus slave
+
+This is the most common parameter and must be adjusted for to match the configuration of the target.
+
+* **retries** - Health check retries
+
+The number of times the health check will be tried before failing the test procedure.
+
+* **timeout** - Read timeout (ms)
+
+The read timeout in milliseconds for the health check
+
+* **healthType** - Health check type 
+
+The health check type to use [ReadCoils, None]
+
+* **healthMode** - Determines when the health check occurs
+
+Enumeration [Before, After] that determines when the health check occurs relative to the test frame.
+
+**Master**
+
+* **timeout** - Read timeout (ms)
+
+The read timeout in milliseconds to wait for a request before failing the test procedure.

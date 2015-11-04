@@ -1,0 +1,11 @@
+
+.. include:: ../../symbols.txt
+
+=============================
+Health checks
+=============================
+
+The Modbus slave tests optionally use a simple READ_COILS request as a health check. This check can be disabled.
+
+Modbus clients do not send a health check message, as there is no request you can send to a client to stimulate a response. Instead, the fuzzer waits for the next
+request as a health check, and then sends the next test frame with the same transaction id as the request.

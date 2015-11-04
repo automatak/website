@@ -1,0 +1,35 @@
+
+.. include:: ../../symbols.txt
+
+=============================
+Procedures
+=============================
+
+* **link** - Link layer (outstation or master)
+   * Fuzzes the link layer using many permutations of control octets, lengths, and special addresses.
+
+* **transport** - Transport layer (outstation or master)
+   * Fuzzes the transport layer with unexpected lengths, sequence numbers, and over-sized ASDUs.
+
+* **app-request** - Application layer requests (outstation)
+   * Fuzzes the application layer with a large number of function codes, qualifier codes, and malformed contents.
+   * Explicitly sends start/stop/count values likely to cause integer overflows.
+
+* **app-unsol** - Application layer unsolicited (master)
+   * Fuzzes the application layer with a large number of unsolicited responses (master)
+
+* **rand-app-request** - Randomized application layer requests (outstation)
+   * Fuzzes the application layer with semi-random requests
+   * Capable of finding some bugs in functions, qualifiers, and objects not explicitly modeled elsewhere.
+
+* **rand-app-unsol** - Randomized application layer unsolicited responses (master)
+   * Fuzzes the application layer with semi-random unsolicited responses
+   * Capable of finding some bugs in qualifiers and objects not explicitly modeled elsewhere.
+
+* **app-octet-unsol** - Unsolicited 0-length octet strings (groups 110-113) (master)
+   * Tests for a specific, but common, bug in the handling of Group 110-113 variation 0
+
+* **app-octet-write** - Unsolicited 0-length octet strings (groups 110-113) (outstation)
+   * Similar to *app-octet-unsol*, but performs a WRITE of a large numbers of 0-length octet string headers
+   
+   

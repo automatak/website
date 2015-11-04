@@ -1,0 +1,16 @@
+
+.. include:: ../../symbols.txt
+
+=============================
+Handshaking
+=============================
+
+The fuzzer can perform some automatic handshaking in response to certain messages. This keeps the target happy, particularly during the master startup sequence.
+
+* UNCONFIRMED_USER_DATA - The fuzzer parses the application layer header and if the frame is any function code other than RESPONSE or UNSOLICITED_RESPONSE it responds with a NULL application response with the same sequence number.
+
+* CONFIRMED_USER_DATA - The fuzzer first responses with a link layer ACK and then handles the message the same as UNCONFIRMED.
+
+* RESET_LINK_STATES - The fuzzer responses with an ACK.
+
+* REQUEST_LINK_STATES - The fuzzer responses with a LINK_STATUS.

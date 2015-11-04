@@ -1,0 +1,158 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Complementary tools &mdash; Aegis Platform 0.2.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="top" title="Aegis Platform 0.2.0 documentation" href="../index.html" />
+    <link rel="next" title="Installation" href="../install/install.html" />
+    <link rel="prev" title="Fuzzing with Aegis™" href="aegis.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../install/install.html" title="Installation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="aegis.html" title="Fuzzing with Aegis™"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Aegis Platform 0.2.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="complementary-tools">
+<h1>Complementary tools<a class="headerlink" href="#complementary-tools" title="Permalink to this headline">¶</a></h1>
+<p>Fuzzing should not be performed in isolation.  Access to the source code and various types of instrumentation is a defender advantage that should not be taken lightly!
+Seldom is it the case in computer security that the defender has the advantage, and this gift should be used to full effect.</p>
+<img src="../_images/instrumentation.svg" /><div class="section" id="code-coverage">
+<h2>Code coverage<a class="headerlink" href="#code-coverage" title="Permalink to this headline">¶</a></h2>
+<p>Code coverage tools allow developers to measure which lines of code (and possibly branches) execute in a binary. This
+technique is frequently used to identify gaps in unit or functional testing coverage. It is also a very
+important metric for fuzzing.</p>
+<p>If your fuzzer isn&#8217;t running a line of code, how can it possibly find a bug on that line? Feedback using the source code
+is important and we need the help of our users and members to improve the tools. Some code coverage frameworks for popular
+languages are listed below.</p>
+<ul class="simple">
+<li>C/C++ - <a class="reference external" href="http://gcc.gnu.org/onlinedocs/gcc/Gcov-Intro.html#Gcov-Intro">gcov</a></li>
+<li>.NET - <a class="reference external" href="http://www.nuget.org/packages/OpenCover">opencover</a></li>
+<li>Java - <a class="reference external" href="http://cobertura.github.io/cobertura/">cobertura</a> or <a class="reference external" href="http://emma.sourceforge.net/">emma</a></li>
+</ul>
+<p>Running code coverage tools during your fuzzing sessions can help you understand your testing gaps. This feedback can help you prioritize
+your other types of tests to mitigate these gaps.</p>
+<p>Automatak uses code coverage analysis from partner source code to improve our fuzzing tools. If you identify gaps where you&#8217;d like to see
+the fuzzing tools provide enhanced coverage, please let us now.</p>
+</div>
+<div class="section" id="dynamic-analysis">
+<h2>Dynamic analysis<a class="headerlink" href="#dynamic-analysis" title="Permalink to this headline">¶</a></h2>
+<p>Dynamic analysis refers to analyzing the runtime properties of a piece of software using instrumentation. It is useful when combined with fuzzing to identify defects
+that may not cause an immediate crash such as:</p>
+<ul class="simple">
+<li>Memory leaks</li>
+<li>Memory errors (out-of-bound read/write)</li>
+<li>Excessive CPU/disk usage</li>
+</ul>
+<p>The most effective tools of this type fully virtualize your software, tracking all OS calls and memory allocations. On Linux, Valgrind is an excellent example of such a tool:</p>
+<ul class="simple">
+<li>C/C++ - <a class="reference external" href="http://valgrind.org/">Valgrind</a></li>
+</ul>
+<p>The <em>memcheck</em> tool, in particular, is indispensable for detecting a wide range of memory problems.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/aegis_emblem.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Complementary tools</a><ul>
+<li><a class="reference internal" href="#code-coverage">Code coverage</a></li>
+<li><a class="reference internal" href="#dynamic-analysis">Dynamic analysis</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="aegis.html"
+                        title="previous chapter">Fuzzing with Aegis™</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../install/install.html"
+                        title="next chapter">Installation</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/intro/tools.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../install/install.html" title="Installation"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="aegis.html" title="Fuzzing with Aegis™"
+             >previous</a> |</li>
+        <li><a href="../index.html">Aegis Platform 0.2.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014-2015, Automatak LLC.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

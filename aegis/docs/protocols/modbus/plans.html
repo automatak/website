@@ -1,0 +1,126 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Test Plans &mdash; Aegis Platform 0.2.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Aegis Platform 0.2.0 documentation" href="../../index.html" />
+    <link rel="up" title="Modbus TCP" href="modbus.html" />
+    <link rel="prev" title="Procedures" href="procedures.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="procedures.html" title="Procedures"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">Aegis Platform 0.2.0 documentation</a> &raquo;</li>
+          <li><a href="../protocols.html" >Protocols</a> &raquo;</li>
+          <li><a href="modbus.html" accesskey="U">Modbus TCP</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="test-plans">
+<h1>Test Plans<a class="headerlink" href="#test-plans" title="Permalink to this headline">¶</a></h1>
+<p>Your Aegis™ installation of contains recommended test plans for Modbus slaves and masters.</p>
+<ul class="simple">
+<li>plans\modbus-master.xml</li>
+<li>plans\modbus-slave.xml</li>
+</ul>
+<p>In most cases, the only parameters you need to adjust will be the <em>unitid</em> of the target when testing slaves, and possibly the
+host (IP) parameter if you&#8217;re testing an external target. Refer to the parameters section if you need to adjust timeouts or health checking.</p>
+<p>The recommended test plan repeats some of the procedures with different fill or random seeds.</p>
+<p>You should repeat the full master test plan with a high-frequency request for each function code that you can configure to do so. For instance, you might have
+four master configurations that respectively scan:</p>
+<ul class="simple">
+<li>Read coils (0x01)</li>
+<li>Read discrete inputs (0x02)</li>
+<li>Read holding registers (0x03)</li>
+<li>Read input registers (0x04)</li>
+</ul>
+<p>If you can configure your software to send control requests, run the suite against those function codes as well.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/aegis_emblem.png" alt="Logo"/>
+            </a></p>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="procedures.html"
+                        title="previous chapter">Procedures</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/protocols/modbus/plans.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="procedures.html" title="Procedures"
+             >previous</a> |</li>
+        <li><a href="../../index.html">Aegis Platform 0.2.0 documentation</a> &raquo;</li>
+          <li><a href="../protocols.html" >Protocols</a> &raquo;</li>
+          <li><a href="modbus.html" >Modbus TCP</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014-2015, Automatak LLC.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

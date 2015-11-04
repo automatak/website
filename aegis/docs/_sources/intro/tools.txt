@@ -1,0 +1,51 @@
+
+.. include:: ../symbols.txt
+
+============================
+Complementary tools
+============================
+
+Fuzzing should not be performed in isolation.  Access to the source code and various types of instrumentation is a defender advantage that should not be taken lightly!
+Seldom is it the case in computer security that the defender has the advantage, and this gift should be used to full effect.
+
+.. image:: ../img/instrumentation.svg
+
+
+---------------------------
+Code coverage
+---------------------------
+
+Code coverage tools allow developers to measure which lines of code (and possibly branches) execute in a binary. This
+technique is frequently used to identify gaps in unit or functional testing coverage. It is also a very
+important metric for fuzzing. 
+
+If your fuzzer isn't running a line of code, how can it possibly find a bug on that line? Feedback using the source code
+is important and we need the help of our users and members to improve the tools. Some code coverage frameworks for popular
+languages are listed below.
+
+* C/C++ - `gcov <http://gcc.gnu.org/onlinedocs/gcc/Gcov-Intro.html#Gcov-Intro>`_
+* .NET - `opencover <http://www.nuget.org/packages/OpenCover>`_
+* Java - `cobertura <http://cobertura.github.io/cobertura/>`_ or `emma <http://emma.sourceforge.net/>`_
+
+Running code coverage tools during your fuzzing sessions can help you understand your testing gaps. This feedback can help you prioritize
+your other types of tests to mitigate these gaps.
+
+Automatak uses code coverage analysis from partner source code to improve our fuzzing tools. If you identify gaps where you'd like to see
+the fuzzing tools provide enhanced coverage, please let us now.
+
+---------------------------
+Dynamic analysis
+---------------------------
+
+Dynamic analysis refers to analyzing the runtime properties of a piece of software using instrumentation. It is useful when combined with fuzzing to identify defects
+that may not cause an immediate crash such as:
+
+* Memory leaks
+* Memory errors (out-of-bound read/write)
+* Excessive CPU/disk usage
+
+The most effective tools of this type fully virtualize your software, tracking all OS calls and memory allocations. On Linux, Valgrind is an excellent example of such a tool:
+
+* C/C++ - `Valgrind <http://valgrind.org/>`_
+
+The *memcheck* tool, in particular, is indispensable for detecting a wide range of memory problems.

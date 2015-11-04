@@ -1,0 +1,21 @@
+
+.. include:: ../../symbols.txt
+
+-----------------------------
+Known gaps
+-----------------------------
+
+The DNP3 fuzzer provides good coverage of the DNP3 link, transport, and application layers. Specialized test cases are provided for each layer
+and some targeted test cases are provided for known failure points within layers such as transport reassembly buffer overflows.
+
+There are some known gaps within the current version. Notably the following object groups are not explicitly modeled:
+
+* Group 0 - Device Attributes
+* Group 70 - File transfer / free-form qualifier 0x5B
+* Group 80 - Datasets 
+* Group 120 - Secure authentication objects
+
+This is not to say that |Aegis| cannot find bugs related to this functionality. The *app-rand-request* and *app-rand-unsol* procedures produce pseudo-random
+ASDUs with many unknown function codes and qualifiers. It is just less likely that bugs in these objects will be found because they are not yet directly modeled
+in the *app-request* and *app-unsol* procedures.
+

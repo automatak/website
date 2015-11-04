@@ -1,0 +1,522 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Industrial Strength Collaboration</title>
+    <description>Automatak blog
+</description>
+    <link>http://automatak.com/blog/</link>
+    <atom:link href="http://automatak.com/blog/feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Sun, 15 Mar 2015 23:38:56 -0400</pubDate>
+    <lastBuildDate>Sun, 15 Mar 2015 23:38:56 -0400</lastBuildDate>
+    <generator>Jekyll v3.0.0-beta1</generator>
+    
+      <item>
+        <title>The DNP3 Zip Bomb</title>
+        <description>&lt;p&gt;&lt;img src=&quot;/blog/assets/zipbomb.jpg&quot; alt=&quot;bug&quot; class=&quot;postimgleft&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;I’ve been wanting to blog about this vulnerability for some time, but needed to give vendors, ICS-CERT, and the DNP Tech committee sufficient time to address the issue.  The tech committee recently published &lt;em&gt;Technical Bulletin TB2014-006, Clarification of the Use of Variation 0 with Object Groups 110-113&lt;/em&gt; which can be downloaded from the &lt;a href=&quot;http://www.dnp.org&quot;&gt;DNP.org member portal&lt;/a&gt;. Since the portal has a pay-wall, I’ve decided to provide some information publicly.  It’s also important to emphasize that this technical bulletin has security implications, primarily for master stations.&lt;/p&gt;
+
+&lt;h1 id=&quot;what-is-an-octet-string&quot;&gt;What is an octet string?&lt;/h1&gt;
+
+&lt;p&gt;DNP3 has a measurement type called an &lt;em&gt;Octet String&lt;/em&gt; (Groups 110 &amp;amp; 111) that is designed to be a “catch all” type if the thing you want to report from an outstation to a master doesn’t quite fit into one of the predefined boxes provided by the specification. For example, say you want to transmit a 64-bit unsigned integer measurement.  DNP3 only has 32-bit integer types, so you could encode your 64-bit type in an Octet string using 8-bytes.  The length of the octet string is defined by the variation used to report it. Therefore Group 111 Variation 8 would be an octet string event that’s 8 bytes long. The interesting thing about this method of encoding is that it allows for the possibility of encoding a zero-length string.&lt;/p&gt;
+
+&lt;h1 id=&quot;whatswrong-with-a-zero-length-octet-string&quot;&gt;What’s wrong with a zero-length octet string?&lt;/h1&gt;
+
+&lt;p&gt;The problem with this is that a very large number of such objects can be encoded in a comparatively tiny packet.  In fact, all it takes is the right header to specify the objects since they are zero-length.  If your implementation supports 16-bit addressing (which it must to be conformant) you can cram  ~26 Million empty strings into a single 2KB message.  If your implementation supports 32-bit addressing closer to 1 trillion empty strings can be encoded.  This is analogous to the infamous “zip bomb” attack where a malicious zip file is crafted that decodes to fill your entire hard drive.&lt;/p&gt;
+
+&lt;h1 id=&quot;the-symptoms&quot;&gt;The Symptoms&lt;/h1&gt;
+
+&lt;p&gt;Many have claimed that these vulnerabilities are “not a big deal because you can reboot a DNP3 device through the protocol itself”.  This is another illustration of why this is an apologist attitude.  In theory, the worst you can do to a perfectly implemented DNP3 master is spoof data. There are no controls to execute and no function codes to make it reboot.  Spoofing is bad enough, but can you do it for every endpoint if the network is segmented properly?  This is not a trivial task.&lt;/p&gt;
+
+&lt;p&gt;With a vulnerability like this, however, you can take down the entire master and all the remote sessions with a single packet. At best, this causes a self-resolving CPU-bound denial-of-service as observed in a popular source code library. At worst, it causes gigabytes of logging that runs out the hard disk of the target or it expands into memory and exhausts the programs resources.&lt;/p&gt;
+
+&lt;h1 id=&quot;notmalformed-and-notidentified-via-fuzzing&quot;&gt;NOT Malformed and NOT identified via Fuzzing&lt;/h1&gt;
+
+&lt;p&gt;This packet is not malformed.  While it can be argued that the DNP3 standard says “you can’t use variation zero in-conjunction with responses” this is a subtlety that is easy to overlook and no deep packet inspection (DPI) firewall currently deployed is going to catch this.  All of the specified data is actually there.&lt;/p&gt;
+
+&lt;p&gt;Unlike the litany of other issues we’ve found via fuzzing, this vulnerability was instead found via protocol analysis and subsequent conjecture.   A single such “empty string” header only causes a hiccup that may not be noticed unless you’re doing sophisticated latency monitoring (something being added to Aegis now).  Only when you craft a packet that repeats many such headers is the vulnerability easily noticeable.&lt;/p&gt;
+
+</description>
+        <pubDate>Wed, 13 Aug 2014 13:11:34 -0400</pubDate>
+        <link>http://automatak.com/blog/2014/08/13/the-dnp3-zip-bomb.html</link>
+        <guid isPermaLink="true">http://automatak.com/blog/2014/08/13/the-dnp3-zip-bomb.html</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>Relative Protocol Robustness</title>
+        <description>&lt;p&gt;&lt;img src=&quot;/blog/assets/download.jpg&quot; alt=&quot;bug&quot; class=&quot;postimgleft&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;I have heard rumors from several people now that others are drawing conclusions about the relative robustness of their favorite protocol.  This post is a response to the viewpoint that your favorite ICS protocol is more robust and secure than DNP3 because you haven’t seen any vulnerability disclosures from the Project Robus team.  Unfortunately, the exact opposite is true.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;The lack of IEC vulnerabilities that you are uncovering are inadvertently tipping the scales in an ongoing debate about which protocols are better.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h1 id=&quot;noiec-61850-60870-103104-iccp-opc-uaethernetip-profinet-have-defects-too&quot;&gt;No, IEC 61850, 60870-103/104, ICCP, OPC-UA, EthernetIP, Profinet have defects too&lt;/h1&gt;
+
+&lt;p&gt;Any other large protocol will have lots of defects in implementation.  We haven’t tested any of these protocols yet because writing a good generational smart fuzzer is a lot of work and has to be done on a per protocol basis. We’ll get to it eventually.&lt;/p&gt;
+
+&lt;p&gt;The defects we have found in DNP3 (and now starting to find in Modbus and Telegyr 8979) are a by-product of bad coding and testing practices, not inherent flaws in the specification.  Based on attack surface area alone, I suspect IEC 61850 will have the most defects, but that’s just a guess. For a explanation of defect rates in protocols, see my related post:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;/2013/10/11/the-wisdom-of-mordac.html&quot;&gt;The Wisdom of Mordac&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Yes, there are areas where DNP3 is difficult to implement correctly, but this will not be a characteristic intrinsic to only DNP3.  We design large protocols in this space without open reference implementations to guide their evolution.&lt;/p&gt;
+
+&lt;h1 id=&quot;patched-dnp3-systems-are-likelymore-robustthan-your-favorite-protocol&quot;&gt;Patched DNP3 systems are likely more robust than your favorite protocol.&lt;/h1&gt;
+
+&lt;p&gt;DNP3 has been through the wringer now and vendors are doing more testing and have a tool for validation.  Patched DNP3 systems that are starting to become available now are more resistant to vulnerability discovery than the protocols I mentioned above.&lt;/p&gt;
+
+</description>
+        <pubDate>Tue, 10 Jun 2014 10:19:25 -0400</pubDate>
+        <link>http://automatak.com/blog/2014/06/10/relative-protocol-robustness.html</link>
+        <guid isPermaLink="true">http://automatak.com/blog/2014/06/10/relative-protocol-robustness.html</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>Thank You, COPA-DATA</title>
+        <description>&lt;p&gt;&lt;img src=&quot;/blog/assets/thumbs-233x300.png&quot; alt=&quot;bug&quot; class=&quot;postimgleft&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;It was a great week in Indianapolis at ICSJWG / SCADASides, but the most exciting moment for me came on Tuesday when ICS-CERT released a DNP3 vulnerability &lt;a href=&quot;https://ics-cert.us-cert.gov/advisories/ICSA-14-154-01&quot;&gt;advisory&lt;/a&gt;. Threatpost picked it up and published an &lt;a href=&quot;http://threatpost.com/copa-data-patches-dnp3-scada-vulnerability&quot;&gt;article&lt;/a&gt;.  I’m not sure what made the advisory an attractive topic for Threatpost because they completely missed the most interesting aspect; Chris and I didn’t report the vulnerability and had no idea the advisory was coming out!&lt;/p&gt;
+
+&lt;p&gt;COPA-DATA used the &lt;a href=&quot;http://www.automatak.com/aegis&quot;&gt;Aegis 0.1.0&lt;/a&gt; fuzzer released in March to test and self-report a vulnerability to ICS-CERT.  They were even kind enough to credit Chris and I with the tool.  We really can’t ask for more from our vendors.  You clearly care, you know what process to follow, and you’re doing some level of threat intelligence on your own product lines.  Thank you COPA-DATA.&lt;/p&gt;
+
+&lt;p&gt;We didn’t receive any questions on the operation of the tool from COPA-DATA. This meant the tool was easy enough to use and the documentation was sufficient. This made Chris and I feel really good about the value we’d provided.&lt;/p&gt;
+
+&lt;p&gt;There are hundreds of latent vulnerabilities this fuzzer is capable of finding, if only vendors would use it.  What percentage of these vulnerabilities will be identified, patched, and reported? Where are the major vendors whose systems we didn’t test, but almost certainly have defects? Are they in the queue with ICS-CERT?  I could provide a long list of things I know are currently vulnerable just based on vulnerabilities found in source code libraries. The next six months will tell us who’s paying attention and who is willing to self-report. Listen carefully and read between the lines.&lt;/p&gt;
+
+</description>
+        <pubDate>Sun, 08 Jun 2014 12:38:57 -0400</pubDate>
+        <link>http://automatak.com/blog/2014/06/08/thumbs-up-to-copa-data.html</link>
+        <guid isPermaLink="true">http://automatak.com/blog/2014/06/08/thumbs-up-to-copa-data.html</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>Robus Accounting</title>
+        <description>&lt;p&gt;&lt;img src=&quot;/blog/assets/accounting.jpg&quot; alt=&quot;accounting&quot; class=&quot;postimgleft&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Some housekeeping was performed on the &lt;a href=&quot;http://www.automatak.com/robus&quot;&gt;Project Robus&lt;/a&gt; site this morning to account for some pending tickets that may (or definitely will not) result in advisories.  There are various reasons why this occurs.&lt;/p&gt;
+
+&lt;p&gt;DNP3 vulnerability #19 was from a source code library supplied by a company called &lt;a href=&quot;http://www.systemcorp.com.au&quot;&gt;SystemCORP&lt;/a&gt;.  Upon request, they supplied us with an evaluation copy of a Windows DLL for their outstation.  We reported an “infinite-loop” vulnerability to the vendor and ICS-CERT on August 6th of last year.  Since that time, the vendor has stopped communicating with the Robus team or ICS-CERT.  I don’t really see the point of disclosing the vulnerability itself, but those considering using their products should know that this is what they might expect in the future.  This company also sells solutions for 61850, IEC 60870, Modbus, etc… you get the idea.  They have some explaining to do to their existing customer base.  There were also claims that the product isn’t sold into US markets. Considering that they’re a source code provider and not an embedded device vendor, I don’t really see how they make this distinction.  Regardless, I hope this firm is using the first fuzzer release to good effect.&lt;/p&gt;
+
+&lt;p&gt;DNP3 vulnerability #20 was found in a fairly new RTU product from a major vendor.  We found an issue with the master implementation that required manual intervention to reset the fault.  The vendor had only a couple customers using a very early version of the firmware. In these situations, an advisory serves little purpose since the all customers can be notified quickly, directly, and discreetly.  This was a great find for the project and the vendor because we were able to eliminate a bug prior to mass deployment.&lt;/p&gt;
+
+</description>
+        <pubDate>Tue, 15 Apr 2014 10:06:26 -0400</pubDate>
+        <link>http://automatak.com/blog/2014/04/15/robus-accounting.html</link>
+        <guid isPermaLink="true">http://automatak.com/blog/2014/04/15/robus-accounting.html</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>In-memory fuzzing</title>
+        <description>&lt;p&gt;&lt;img src=&quot;/blog/assets/multicore.png&quot; alt=&quot;bug&quot; class=&quot;postimgleft&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Fuzzing is like searching for a needle in haystack, and testing via a network interface has unavoidable latency that limits test case throughput.  We can work within this limitation by intelligently designing the fuzzer to explore boundary conditions instead of all possible values.  We take a problem that is O(2^n) in the number of bits in our target message, and we transform it into a problem that is O(2^n) in the number of interesting values in our grammar.  All we’ve done is lowered the constant of proportionality.&lt;/p&gt;
+
+&lt;p&gt;Unfortunately, there’s no way around the fundamental combinatorial nature of the problem.  There are other ways to play with the constant of proportionality, however.  Testing software via a network interface is limited by a number of factors including:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;The responsiveness of the software (interrupt driven or polling?)&lt;/li&gt;
+  &lt;li&gt;Context switching of threads&lt;/li&gt;
+  &lt;li&gt;Network stack overhead&lt;/li&gt;
+  &lt;li&gt;Network interface overhead&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The many context switches are the real killer.  Even testing software on the loop-back interface within the OS kills performance.  The fastest fuzzer/target systems we tested in &lt;a href=&quot;http://www.automatak.com/robus&quot;&gt;Project Robus&lt;/a&gt; were able to maintain several hundred test cases/second.  This sounds pretty fast, but when you consider the shear combinatorial size of an input frame of 20+ bytes, it gets you nowhere without case limiting smart fuzzing.  Pure randomness just doesn’t cut it at these speeds.&lt;/p&gt;
+
+&lt;p&gt;If we have access to the source code (or we’re a developer on a project), we can do brute force fuzz testing in-memory. By this, I mean that we can run the fuzzer and the target code on the same thread, and even on multiple threads simultaneously.  I’ve been working on re-writing the parser for &lt;a href=&quot;http://www.automatak.com/opendnp3&quot;&gt;opendnp3&lt;/a&gt; using a better architecture and a lot of code generation.  I decided to throw together a purely random fuzzer to see what kind of speeds I could hit.  The code is &lt;a href=&quot;https://github.com/automatak/dnp3/blob/2.0.x/cpp/apdufuzz/ApduFuzz.cpp&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The application takes command line inputs for the number of iterations to run and the maximum size of the frame to throw at the parser. It then spins up a thread for each core of the system it’s running on, each with a different random seed.&lt;/p&gt;
+
+&lt;p&gt;The results were impressive.  On a quad-core i7 I was able to sustain 3,500,000 test cases/sec with the following conditions:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;random frame size in the interval [1, 100]&lt;/li&gt;
+  &lt;li&gt;uniform* distribution of frame sizes&lt;/li&gt;
+  &lt;li&gt;random bytes [0, 0xFF]&lt;/li&gt;
+  &lt;li&gt;recording tabulated error codes in counters&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;3.5e6 test cases per second is about 15,000x faster than the smart fuzzer over a network interface.  Each test cases is much less intelligent (dirt stupid), but who cares when I’m running 4 orders of magnitude faster.  This would be incredibly cool to combine with a genetic algorithm and cache tainting feedback from the binary.&lt;/p&gt;
+
+&lt;p&gt;Obviously, this only works if you have the code and can write specialized test cases.  If you’re developing a network protocol that has modular parsers at different layers, why wouldn’t you do this? It has a really high bang to buck ratio, and will likely find different types of bugs than a smart fuzzer would.&lt;/p&gt;
+
+&lt;p&gt;The really interesting questions in mind are things like what optimal probably distributions are both for the frame length and the random data fill.  This is probably somewhat protocol specific.  Since programmers tend to make mistakes at integer boundaries, you might want to fill the data with an inverse normal distribution that emphasizes values like [0x00, 0x01 .. 0xEF, 0xFF].  There tend to be a lot of repeats for short frames, so you might want to use a probability distribution with more weight given to longer frames.  All questions I have, but answers I have not.  Anyone know of any papers on the subject?&lt;/p&gt;
+
+</description>
+        <pubDate>Thu, 12 Dec 2013 20:01:47 -0500</pubDate>
+        <link>http://automatak.com/blog/2013/12/12/in-memory-fuzzing.html</link>
+        <guid isPermaLink="true">http://automatak.com/blog/2013/12/12/in-memory-fuzzing.html</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>The Wisdom of Mordac</title>
+        <description>&lt;p&gt;&lt;img src=&quot;/blog/assets/bug.jpg&quot; alt=&quot;bug&quot; class=&quot;postimgleft&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The DNP UG recently published a &lt;a href=&quot;http://www.dnp.org/Lists/Announcements/Attachments/24/ICS-CERT%20Notifications%20regarding%20DNP3.pdf&quot;&gt;statement&lt;/a&gt; regarding the rash of DNP3 advisories from ICS-CERT.  Generally, I agree with their statements. There is nothing wrong with the specification in the perfect world of specifications.  In theory, a developer should be able to write a flawless implementation of the protocol.  In practice, however, something quite different has been demonstrated. What factors account for this disparity, and how can these pitfalls be avoided going forward?&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Simplicity is prerequisite for reliability.” -Edsger W. Dijkstra&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;There are many ways to express this simple design principle.  In software engineering, this is a &lt;a href=&quot;http://www.techrepublic.com/blog/it-security/the-danger-of-complexity-more-code-more-bugs&quot;&gt;well&lt;/a&gt; -&lt;a href=&quot;http://mayerdan.com/ruby/2012/11/11/bugs-per-line-of-code-ratio&quot;&gt;studied&lt;/a&gt; &lt;a href=&quot;http://cacm.acm.org/magazines/2010/2/69354-a-few-billion-lines-of-code-later/fulltext&amp;quot;&quot;&gt;phenomena&lt;/a&gt;.  Software bugs are proportional to the number of lines of code (LOC).&lt;/p&gt;
+
+&lt;h1 id=&quot;bugs--loc&quot;&gt;Bugs ∝ LOC&lt;/h1&gt;
+
+&lt;p&gt;There are many factors that affect the constant of proportionality.  A short list includes:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Amount, quality, and type of testing (unit, functional, integration, negative, etc)&lt;/li&gt;
+  &lt;li&gt;Performing static analysis&lt;/li&gt;
+  &lt;li&gt;Peer review of code&lt;/li&gt;
+  &lt;li&gt;The type of application (i.e., multi-threaded apps are prone to additional types of bugs)&lt;/li&gt;
+  &lt;li&gt;Code-base maturity and # of users (users find bugs)&lt;/li&gt;
+  &lt;li&gt;Appropriate architecture, modularity, and encapsulation (good design principles)&lt;/li&gt;
+  &lt;li&gt;Good internal reusability (no copy/paste coding)&lt;/li&gt;
+  &lt;li&gt;Developer skill level&lt;/li&gt;
+  &lt;li&gt;Language of implementation&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The point is that with all of these other factors being equal, the number of bugs increases proportionally to the number of lines of code.  How can we relate this rubric to protocol specifications?&lt;/p&gt;
+
+&lt;h1 id=&quot;loc-size-of-specification&quot;&gt;LOC ∝  Size of Specification&lt;/h1&gt;
+
+&lt;p&gt;The larger a specification is the more code you have to write to implement it. Proportionality is a transitive mathematical property, which allows us to write the following.&lt;/p&gt;
+
+&lt;h1 id=&quot;bugs--size-of-specification&quot;&gt;Bugs ∝  Size of Specification&lt;/h1&gt;
+
+&lt;p&gt;Now we have something illuminating. Specification size and complexity are directly proportional to bugs in implementations.  Let’s put DNP3 in perspective with other protocols.&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt; &lt;/th&gt;
+      &lt;th&gt; &lt;/th&gt;
+      &lt;th&gt; &lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Specication&lt;/th&gt;
+      &lt;th&gt;Document Size (pages)&lt;/th&gt;
+      &lt;th&gt;Ratio&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Modbus V1.1b3&lt;/td&gt;
+      &lt;td&gt;50&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;DNP3 IEEE-1815-2012&lt;/td&gt;
+      &lt;td&gt;821&lt;/td&gt;
+      &lt;td&gt;16.4&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;IEC61850 + MMS&lt;/td&gt;
+      &lt;td&gt;1800+&lt;/td&gt;
+      &lt;td&gt;36+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;When you look at it this way, the risk is obvious. The predictions for a full implementation of IEC61850 are rather dire to say the least.&lt;/p&gt;
+
+&lt;h1 id=&quot;is-there-something-wrong-with-the-dnp3-specification&quot;&gt;Is there something wrong with the DNP3 specification?&lt;/h1&gt;
+
+&lt;p&gt;I don’t think the answer is black and white.  The Achilles’ heel of DNP3 is size and complexity.  What standards bodies have to realize is that functionality and robustness are usually competing design concerns.  DNP3 has a lot of stuff in it that most users don’t need.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;If you’re on IP infrastructure, there is almost always a better alternative to DNP3 file transfer.&lt;/li&gt;
+  &lt;li&gt;How many deployments actually use virtual terminal objects or custom data-set extensions (besides WITS)?&lt;/li&gt;
+  &lt;li&gt;Do we really need 32-bit addressing?&lt;/li&gt;
+  &lt;li&gt;Should level 2 include Common Time of Occurrence and related events?&lt;/li&gt;
+  &lt;li&gt;Should level 2 include broadcast?&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;These are just some examples I think should be discussed in the case of DNP3.  Even if an end user doesn’t use something, bad code stubs may still be lurking in their vendor’s implementation.  How well have they tested it?  Have these seldom-used features been exhaustively put through their paces using a protocol fuzzer?&lt;/p&gt;
+
+&lt;p&gt;If we’re going to demand functionality, we must also demand adequate testing.  We can lower the constant of proportionality between bugs and specification size in a number of ways.  There are things that standards bodies can do to help with this issue:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Highlight specific areas of the standard where mistakes have been made in the past or are likely to made in the future.&lt;/li&gt;
+  &lt;li&gt;Produce protocol subsets that highlight what is core functionality and what you use at your own risk.&lt;/li&gt;
+  &lt;li&gt;Consider developing or supporting open reference implementations of standards to provide direct feedback to specification changes or additions.&lt;/li&gt;
+  &lt;li&gt;Consider making testing recommendations that include other regimes besides conformance: i.e  unit, functional, soak, and negative testing.  These can purely be high-level recommendations, not detailed specifications as the case is with DNP3 conformance tests.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Those implementing standards have additional responsibilities and pitfalls to navigate:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Use appropriate technology&lt;/li&gt;
+  &lt;li&gt;Design safe APIs so that protocol libraries are difficult to misuse.&lt;/li&gt;
+  &lt;li&gt;Use good design principles that encapsulate complexity and promote modularity.&lt;/li&gt;
+  &lt;li&gt;Deciding when you have enough of each class of testing is not easy.  Code coverage helps but this isn’t everything.&lt;/li&gt;
+  &lt;li&gt;Provide feedback to standards bodies on hard-to-implement, dangerous, or extraneous features.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Controlling, managing, and mitigating complexity are the fundamental challenges of software engineering.  Part of managing complexity is controlling it’s growth and asking if you really need a feature.  Every standards body needs someone to play the role of Mordac!&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/blog/assets/usability.gif&quot; alt=&quot;usability&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Systems that find the right balance between features and security are not built easily.  Mordac can’t always win, but you need to listen to what he has to say.&lt;/p&gt;
+
+</description>
+        <pubDate>Fri, 11 Oct 2013 16:12:50 -0400</pubDate>
+        <link>http://automatak.com/blog/2013/10/11/the-wisdom-of-mordac.html</link>
+        <guid isPermaLink="true">http://automatak.com/blog/2013/10/11/the-wisdom-of-mordac.html</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>Fuzzing in Scala</title>
+        <description>&lt;p&gt;&lt;img src=&quot;/blog/assets/scala.png&quot; alt=&quot;dragons&quot; class=&quot;postimgleft&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Fuzzing is a brute-force technique used to find bugs in software. Networks protocols, files, web-servers, and many other kinds of software can be fuzzed. In this post, I’ll show a few reasons why
+&lt;a href=&quot;http://www.scala-lang.org&quot;&gt;Scala&lt;/a&gt; is particularly well-suited to writing a smart fuzzer. Smart fuzzers (or generational fuzzers) understand the semantics of the target well-enough to generate structurally valid and invalid data.&lt;/p&gt;
+
+&lt;p&gt;For the sake of agrument, let’s invent a very simple byte/bit oriented protocol to fuzz. Let’s say it only contains 2 bytes.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Byte0&lt;/strong&gt; - First two bits independently have meaning,  whereas the remaining 6 represent a sequence number modulo 64&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Byte1&lt;/strong&gt; - 1 byte function code with certain valid values&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Let’s also assume that we have a function defined to assemble byte1 from it’s pieces:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-scala&quot; data-lang=&quot;scala&quot;&gt;&lt;span class=&quot;c1&quot;&gt;// assemble into a valid byte&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;byte1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b1&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Boolean&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b2&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Boolean&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;seq&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Byte&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Byte&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Now we define the important values that we want to fuzz:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-scala&quot; data-lang=&quot;scala&quot;&gt;&lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bit1&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bit2&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;seq&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;63&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;funcs&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;7&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;255&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Because fuzzing is O(2^n), and more complex protocols will have a large number of fields to fuzz, we try to limit our test cases above to the ones that are likely to find bugs. For
+example, integer boundaries are always interesting.&lt;/p&gt;
+
+&lt;p&gt;With our imperative hats on, we could then write a fuzzer with the following structure:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-scala&quot; data-lang=&quot;scala&quot;&gt;&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;lt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bit1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;lt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bit2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;lt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;seq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;lt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;funcs&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+         &lt;span class=&quot;n&quot;&gt;attack&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;byte1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;seq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;
+      &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;We could easily write a program like this in any imperative language. It would look similar in C#, Java, C/C++. We can improve this a little bit by leveraging the syntactic sugar provided by Scala for-comprehensions:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-scala&quot; data-lang=&quot;scala&quot;&gt;&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;b1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;lt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bit1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; 
+  &lt;span class=&quot;n&quot;&gt;b2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;lt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bit2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; 
+  &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;lt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;seq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; 
+  &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;lt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;funcs&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;  
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;attack&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;byte1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;seq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;That reads nicely, but fundamentally still has the same problem: we have to define all of the degrees of freedom in a protocol/file in a single place. This blows up quickly for large protocols; this structure lacks composability. It’s also annoying that we can’t separate the problem of attack frame generation from the actual fuzzing of the device with the ‘attack’ function. This structure, however, does possess one very desirable property: i&lt;strong&gt;t’s lazy. &lt;/strong&gt;Each frame is not generated until it’s actually needed. In an ideal world we’d have our laziness and compose it too!&lt;/p&gt;
+
+&lt;h1 id=&quot;lazy-functional-programming-for-the-win&quot;&gt;Lazy functional programming for the win&lt;/h1&gt;
+
+&lt;p&gt;Scala can do this tersely and lazily using iterators and for-comprehensions.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-scala&quot; data-lang=&quot;scala&quot;&gt;&lt;span class=&quot;k&quot;&gt;object&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Byte1&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;extend&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Iterable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Byte&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// implemenation not important&lt;/span&gt;
+ &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;byte1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b1&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Boolean&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b2&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Boolean&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;seq&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Byte&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Byte&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;bit1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+ &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bit2&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+ &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;seq&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;63&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;iterator&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Iterator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Byte&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+   &lt;span class=&quot;n&quot;&gt;b1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;lt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bit1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;iterator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; 
+   &lt;span class=&quot;n&quot;&gt;b2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;lt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bit2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;iterator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; 
+   &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;lt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;seq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;iterator&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;yield&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;byte1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Calling &lt;em&gt;iterator&lt;/em&gt; does not generate all permutations of Byte1 immediately. It returns a new iterator that represents all permutations of the sub-fields. To understand what this is doing, it may be best to give a simple example:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-scala&quot; data-lang=&quot;scala&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cross&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Iterator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;lt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;-&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;toIterator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;lt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;-&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;toIterator&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;yield&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bcross&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;foreach&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;What do you suppose that prints?&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-scala&quot; data-lang=&quot;scala&quot;&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;
+&lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;
+&lt;span class=&quot;mi&quot;&gt;6&lt;/span&gt;
+&lt;span class=&quot;mi&quot;&gt;8&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The key is to realize that the iteration is lazy. It doesn’t actually compute each value until it is needed. To truly understand how cool this is you have to see the types of hoops you have to jump through to &lt;a href=&quot;https://gist.github.com/davidsheldon/1109506&quot;&gt;implement it in Java.&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h1 id=&quot;can-we-do-better&quot;&gt;Can we do better?&lt;/h1&gt;
+
+&lt;p&gt;If we’re going to be doing this lazy permutation thing all the time, we should define some helper functions and create a domain specific language (DSL) to help us make our code even easier to read.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-scala&quot; data-lang=&quot;scala&quot;&gt;&lt;span class=&quot;c1&quot;&gt;// Lazy permutation transformations on iterators&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;object&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Cross&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;apply&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;A&lt;/span&gt;, &lt;span class=&quot;kt&quot;&gt;B&lt;/span&gt;, &lt;span class=&quot;kt&quot;&gt;Z&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;](&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Iterable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Iterable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;])&lt;/span&gt;
+   &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;convert&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Z&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Iterator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Z&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; 
+     &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ai&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;lt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;iterator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bi&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;lt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;iterator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; 
+       &lt;span class=&quot;k&quot;&gt;yield&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;convert&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ai&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bi&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;// higher order&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;apply&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;A&lt;/span&gt;, &lt;span class=&quot;kt&quot;&gt;B&lt;/span&gt;, &lt;span class=&quot;kt&quot;&gt;C&lt;/span&gt;, &lt;span class=&quot;kt&quot;&gt;Z&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;....&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;We define transformations in a general way above and this gives us some nice syntacic sugar. Your code for permuting byte1 becomes:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-scala&quot; data-lang=&quot;scala&quot;&gt;&lt;span class=&quot;k&quot;&gt;object&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Byte1&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;extend&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Iterable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Byte&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// implemenation not important&lt;/span&gt;
+ &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;byte1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b1&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Boolean&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b2&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Boolean&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;seq&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Byte&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Byte&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;bit1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+ &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bit2&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+ &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;seq&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;63&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;iterator&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Iterator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Byte&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Cross&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bit1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bit2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;seq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;byte1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Now that we can write pieces whose only concern is defining the valid permutations of sub-fields it’s easy to modularize our fuzzer. Higher level pieces can be composed from lower level ones without sacrificing laziness:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-scala&quot; data-lang=&quot;scala&quot;&gt;&lt;span class=&quot;k&quot;&gt;object&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Fuzzer&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;App&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;// Maybe we send this over a socket to the target application&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;attack&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bytes&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Byte&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Unit&lt;/span&gt;  &lt;span class=&quot;kt&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;byte2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;7&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;255&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;frames&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Cross&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Byte1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;byte2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;frames&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;foreach&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;attack&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;It’s not uncommon for the total attack set to represent millions of trials and is a bad idea to generate them up-front.&lt;/p&gt;
+
+&lt;p&gt;This type of smart fuzzer architecture has many desirable properties:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Modular and easily composable.&lt;/li&gt;
+  &lt;li&gt;Cleanly separates attack-generation from the fuzzing process itself.&lt;/li&gt;
+  &lt;li&gt;Preserves laziness: Finitely bounded in memory and start-up time.&lt;/li&gt;
+  &lt;li&gt;Attack generation is non-random and repeatable.&lt;/li&gt;
+  &lt;li&gt;Code is easy to read and understand.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Smart fuzzing frameworks like Peach/Sully may have properties 1-4, but even if they do I seriously doubt they accomplish 5. Defining protocols in XML is also tedious compared to what a well designed Scala DSL can provide. Scala collections, themselves, are a powerful DSL for describing the attack space.&lt;/p&gt;
+</description>
+        <pubDate>Thu, 12 Sep 2013 14:46:23 -0400</pubDate>
+        <link>http://automatak.com/blog/2013/09/12/scala-lazy-streams-composability.html</link>
+        <guid isPermaLink="true">http://automatak.com/blog/2013/09/12/scala-lazy-streams-composability.html</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>Here be dragons</title>
+        <description>&lt;p&gt;&lt;img src=&quot;/blog/assets/dragons.jpg&quot; alt=&quot;dragons&quot; class=&quot;postimgleft&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;I have been conducting industrial control system (ICS) protocol vulnerability research lately with good success. The details of much of this research will become public domain via responsible channels in the near future. Several repeating attitudes have emerged in discussions with stakeholders with which I disagree.&lt;/p&gt;
+
+&lt;p&gt;To vendors that would claim I am creating a problem for personal gain:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;There is already a problem, you just don’t realize it exists.&lt;/strong&gt; There is also already a market for security products in this space and the more progressive and aware vendors go to great length to use them.  It is unfair for you to sell your untested and vulnerable products to unaware end users.  I intend to create product differentiation in this space to raise the bar of excellence with respect to SCADA software and specifically remotely-exploitable protocol software.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;To my security-aware collaborators:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;I have business aspirations.&lt;/strong&gt; I have already communicated this to you, but I want all the stakeholders to be aware of this fact so nobody will paint this research as solely altruistic or academic. It is not. Business is most productive and fun when financial interests line up with industry/customer needs and personal academic interests. It’s no secret to my friends and colleagues that I feel strongly about business models that provide little benefit to anyone else. Patent trolls in the software industry, I’m talking to you.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;To anyone that thinks that security is not yet an issue in this space:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;ICS security should not be reactive.&lt;/strong&gt; Let’s not wait for a major incident to send us all scrambling.  I know this is a debate, but please acknowledge that those calling for action are not a small minority trying to stir the pot for personal benefit. There are plenty of expert end users at utilities that feel the same way. Take kindly the counsel of history and realize that this industry is far behind others with regard to security awareness. Your private networks matter not. The fact that we have not had a major incident yet matters not.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;To anyone that thinks that software security testing is some kind of black art:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Very few people know what software security really is, even if they are so-called “security experts.”  Like the maps in ancient history used to warn, the dangerous area just outside the map is sometimes best left alone. The uncharted territory just read, “Here be dragons,” meaning that you should not venture there. It is too scary or too challenging.  Fortunately for software security, the age of darkness is over because the first explorers risked their souls and delved into the mystic lands of hacking, trying to explain security to ordinary software developers. First, they were feared for their new skills, and later they were blamed for many of the dangerous findings they encountered.  Even today they are thought to possess some secret arts that make them special. But what they found was not that complex after all.&lt;/p&gt;
+
+  &lt;p&gt;&lt;strong&gt;Takanen, Demott, and Miller&lt;/strong&gt; - Fuzzing for Software Security Testing and Quality Assurance, page 3.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+</description>
+        <pubDate>Thu, 16 May 2013 19:19:01 -0400</pubDate>
+        <link>http://automatak.com/blog/2013/05/16/here-be-dragons.html</link>
+        <guid isPermaLink="true">http://automatak.com/blog/2013/05/16/here-be-dragons.html</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>First consecutive 7-digit base-10 palindromic prime in PI</title>
+        <description>&lt;p&gt;&lt;img src=&quot;/blog/assets/pi.png&quot; alt=&quot;Pi&quot; class=&quot;postimgleft&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Some time ago, a hiring post went viral on proggit. This was a very clever way to filter resumes and I’d definitely consider doing something similar. The various pieces required to implement this can be cobbled to together by searching and you don’t have to be a math genius to write this program. More interesting to me then solving it, is how you frame the problem and craft an elegant solution. I decided to take a crack in Scala.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Digits of Pi - we don’t know how many we’ll need so whatever algorithm we choose should allow us to consume the digits lazily.  I chose Iterator to implement this since it doesn’t &lt;a href=&quot;http://mikeslinn.blogspot.com/2012/11/scala-stream-memoization.html&amp;quot;&quot;&gt;memoize&lt;/a&gt; and is lazy&lt;/li&gt;
+  &lt;li&gt;A primality test&lt;/li&gt;
+  &lt;li&gt;A palindrome test (easy. reverse a number and check for equality)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-scala&quot; data-lang=&quot;scala&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pi&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Iterator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;BigInt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;isPrime&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Seq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;BitInt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;])&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Boolean&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;isPalindrome&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Seq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;BigInt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;])&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;reverse&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;solution&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pi&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sliding&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;7&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;find&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;isPalindrome&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;isPrime&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Framing the problem this way makes that final line read like English. All I needed was a way to generate digits of Pi and test for primality. Any decent software engineer is a master plagiarist so finding these bits and pieces was not hard. I took a java algorithm for calculating digits of pi I found on stack overflow, tested it, and re-factored it into a pure functional style. It returns a Scala iterator so I the digits can be lazily-consumed.&lt;/p&gt;
+
+&lt;p&gt;Basic primality tests are pretty simple. The simplest ones just look for a divisor that’s an odd number less than the square root of the number being tested. There are algorithmic-ally better algorithms than the one I found, but there’s a lot going on in this one line:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-scala&quot; data-lang=&quot;scala&quot;&gt;&lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;primes&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Stream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;BigInt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;BigInt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;#::&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Stream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;from&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;BigInt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;apply&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;filter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;primes&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;takeWhile&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;j&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;forall&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;k&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The val above is a lazy stream of all primes numbers, defined in terms of itself. This works, because the next prime in the list is only defined in terms of the primes before it that are less than or equal to it’s square root! It is very efficient since Stream memoizes all the primes it’s found to date and new primes are only searched for using existing primes as test divisors. Whoever wrote this is a functional programming god. If see this post, send me your name so I can credit you.&lt;/p&gt;
+
+&lt;p&gt;Pretty happy with the end &lt;a href=&quot;https://gist.github.com/jadamcrain/5374293#file-gistfile1-scala&quot;&gt;result&lt;/a&gt;. It’s factored in such a way that it’s easy to change the program to look for all kinds of occurrences in transcendental numbers.  I think the most interesting thing about this exercise is writing the digits of Pi as an Iterator. This allows you to take advantage of Scala’s amazing combinators like &lt;em&gt;sliding&lt;/em&gt; and &lt;em&gt;find&lt;/em&gt;.&lt;/p&gt;
+</description>
+        <pubDate>Fri, 12 Apr 2013 19:24:39 -0400</pubDate>
+        <link>http://automatak.com/blog/2013/04/12/first-consecutive-7-digit-base-10-palindromic-prime-in-pi.html</link>
+        <guid isPermaLink="true">http://automatak.com/blog/2013/04/12/first-consecutive-7-digit-base-10-palindromic-prime-in-pi.html</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>DNP3 SAv5 and TLS: Different trust boundaries</title>
+        <description>&lt;p&gt;The purpose of this post is not to compare the merits of SAv5 vs. TLS, but rather to point out how the security concept of trust boundaries is applied to the analysis of dnp3 implementations themselves.&lt;/p&gt;
+
+&lt;p&gt;Distributed Network Protocol (DNP) has an application layer authentication standard called Secure Authentication (SA) that will soon be widely implemented in critical industrial control systems. It uses a challenge-response architecture and secure hashing to ensure that critical messages like controls are authenticated before they are processed.&lt;/p&gt;
+
+&lt;p&gt;IMO, the three main benefits of putting the authentication at the application layer are:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Transport neutrality&lt;/strong&gt;: It works on a serial port or spread spectrum radio&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Granularity&lt;/strong&gt;: Individual agents can be authenticated leading to an audit trail&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Bandwidth reduction / flexibility&lt;/strong&gt;:Not all data need be authenticated. Only those message deemed critical.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Using SA does not preclude using Transport Layer Security (TLS). The two can work together. Even though they do different things in different ways, they both provide a duplicate function: ensuring that critical data comes from a trusted source. If you think of all the stuff they do, you can crudely summarize their relationship with the following venn diagram:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/blog/assets/dnp-sa-tls-venn.png&quot; alt=&quot;VennDiagram&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The standard has been vetted by security experts and like everything that that DNP3 technical committee puts out, is well thought-out and exhaustively documented. My concern, however, is that asking vendors to implement SA is not itself a recipe for secure DNP3 devices. I believe a lot of people know this already, but without specific warnings, it may give vendors and utilities a false sense of confidence if the proper security testing is not done by companies that implement the protocol in their devices.&lt;/p&gt;
+
+&lt;p&gt;It comes down to the security concept of trust boundaries and how much software surface area is exposed to unauthenticated data. Hackers don’t need to break your authentication mechanisms to compromise a device if they can exploit a bug in software that’s outside your trust boundary. With SA, the DNP3 stack itself is outside the trust boundary. With TLS, the stack is inside the trust boundary.&lt;/p&gt;
+
+&lt;p&gt;A utility that is solely relying on SAv5 for authentication should hold DNP3 vendors to a higher standard than if they are using TLS.  Conformance testing (and SAv5 testing) is not a sufficient criteria for selecting secure hardware when solely running SA because so much software is outside the trust boundary. If the utility runs a good implementation of TLS instead, (or in addition) they can sleep a little better at night without doing security audits on their DNP device themselves. Libraries that implement TLS like OpenSSL are rigorously punished with tools like fuzzers to lower the probability of an exploitable defect and have the eyes of hundreds of security experts on them. If TLS is filtering out all non-authenticated messages, you don’t have to hold the DNP3 implementation to such a high standard.&lt;/p&gt;
+
+&lt;p&gt;DNP3 is a very large protocol. Modbus is 70 pages and has very little state to track. DNP is over 1,000 and is incredibly statefu_.  It’s commonly accepted that defect rates in software are proportional to the size of a code-base and that stateful software is harder to implement correctly than state-less systems.  Therefore, it is not unreasonable to assert that it’s almost 15 times more likely that a programmer will miss a corner case while developing DNP than Modbus.&lt;/p&gt;
+
+&lt;p&gt;The only mitigation to this type of vulnerability is to insist that any software examining unauthenticated data is ‘white hat’ tested with tools like protocol fuzzers to lower the probability of an exploitable defect. TLS provides protection against software defects in the DNP stack itself, whereas the sole application of SA does not.&lt;/p&gt;
+
+&lt;p&gt;Having a large surface area of code outside a trust boundary that has not been rigorously tested is a recipe for disaster. Testing negative (malformed) inputs is critical in any software outside a trust boundary. Fuzzing offers a complementary approach to code inspection and units tests.&lt;/p&gt;
+
+</description>
+        <pubDate>Mon, 08 Apr 2013 19:08:45 -0400</pubDate>
+        <link>http://automatak.com/blog/2013/04/08/dnp3-sav5-vs-tls-different-trust-boundaries.html</link>
+        <guid isPermaLink="true">http://automatak.com/blog/2013/04/08/dnp3-sav5-vs-tls-different-trust-boundaries.html</guid>
+        
+        
+      </item>
+    
+  </channel>
+</rss>

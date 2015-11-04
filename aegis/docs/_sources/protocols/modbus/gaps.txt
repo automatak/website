@@ -1,0 +1,22 @@
+
+.. include:: ../../symbols.txt
+
+-----------------------------
+Known gaps
+-----------------------------
+
+The Modbus fuzzer provides good coverage via modeling of the following commonly-used function codes:
+
+* Read coils (0x01)
+* Read discrete inputs (0x02)
+* Read holding registers (0x03)
+* Read input registers (0x04)
+* Write single coil (0x05)
+* Write single register (0x06)
+* Write multiple coils (0x0F)
+* Write multiple registers (0x10)
+
+Future enhancements:
+
+* Additional function code modeling
+* Procedures that inject random application layer data

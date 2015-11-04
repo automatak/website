@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Modbus TCP &mdash; Aegis Platform 0.2.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Aegis Platform 0.2.0 documentation" href="../../index.html" />
+    <link rel="up" title="Protocols" href="../protocols.html" />
+    <link rel="next" title="Known gaps" href="gaps.html" />
+    <link rel="prev" title="Test Plans" href="../dnp3/plans.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="gaps.html" title="Known gaps"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../dnp3/plans.html" title="Test Plans"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">Aegis Platform 0.2.0 documentation</a> &raquo;</li>
+          <li><a href="../protocols.html" accesskey="U">Protocols</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="modbus-tcp">
+<h1>Modbus TCP<a class="headerlink" href="#modbus-tcp" title="Permalink to this headline">¶</a></h1>
+<p>Vanilla Modbus TCP is a simple protocol that utilizes a basic request-response design. The specification is available from <a class="reference external" href="http://www.modbus.org/">Modbus.org</a>
+at no charge.</p>
+<p>The protocol transports application layer messages uses a simple envelope called the MBAP. The application layer itself supports function codes that completely
+determine the shape of the contents.</p>
+<p>Modbus servers are easy to fuzz test. You can simply iterate through the various function code models. Modbus clients are more challenging, because any decent
+implementation will only parse response data that appears to be from the request. In other words, you will usually only be testing the parser for that particular
+request. This is very different to a DNP3 that has function  + object semantics that allow for a nearly infinite number of permutations. To thoroughly test a Modbus
+client, the tester must iteratively reconfigure and test every possible function code that can be sent from the master.</p>
+<p><strong>Topics</strong></p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gaps.html">Known gaps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="health.html">Health checks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameters.html">Parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="procedures.html">Procedures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plans.html">Test Plans</a></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/aegis_emblem.png" alt="Logo"/>
+            </a></p>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../dnp3/plans.html"
+                        title="previous chapter">Test Plans</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="gaps.html"
+                        title="next chapter">Known gaps</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/protocols/modbus/modbus.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="gaps.html" title="Known gaps"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../dnp3/plans.html" title="Test Plans"
+             >previous</a> |</li>
+        <li><a href="../../index.html">Aegis Platform 0.2.0 documentation</a> &raquo;</li>
+          <li><a href="../protocols.html" >Protocols</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014-2015, Automatak LLC.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>
