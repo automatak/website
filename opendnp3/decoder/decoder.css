@@ -28,7 +28,7 @@ h1 {
   color: #42A5F1;
 }
 
-.app-obj-header {
+.app-object-header {
   color: #94D4E0;
 }
 
@@ -46,6 +46,10 @@ h1 {
 
 .indent4 {
   padding-left: 80px;
+}
+
+.indent5 {
+  padding-left: 100px;
 }
 
 .outer {
