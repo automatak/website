@@ -1,6 +1,12 @@
 body {
     color: white;
     background-color: #1D1C1C;
+    font-family: Consolas,monaco,monospace;
+	font-size: 18px;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: 500;
+	line-height: 26.4px;
 }
 
 h1 {
