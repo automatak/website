@@ -1,0 +1,50 @@
+body {
+    color: white;
+    background-color: #1D1C1C;
+}
+
+h1 {
+    color: navy;
+    margin-left: 20px;
+}
+
+.input {
+  color: white;
+}
+
+.link {
+  color: #F1E640;
+}
+
+.transport {
+  color: #34EA34;
+}
+
+.app {
+  color: #42A5F1;
+}
+
+.obj-header {
+  color: #94D4E0;
+}
+
+.indent1 {
+  padding-left: 20px;
+}
+
+.indent2 {
+  padding-left: 40px;
+}
+
+.indent3 {
+  padding-left: 60px;
+}
+
+.indent4 {
+  padding-left: 80px;
+}
+
+.outer {
+  margin: 0 auto;
+}
+
