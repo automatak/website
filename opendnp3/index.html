@@ -30,6 +30,11 @@
     </style>
 
     <style>
+
+      textarea {
+            width: 500px;
+      }
+
       li {
       margin: 10px;
       }
@@ -118,115 +123,131 @@
     ================================================== -->
       <div class="row-fluid">
 
-        <div class="span9">
-
-          <!-- Welcome
+          <div class="span9">
+              <!-- Welcome
         ================================================== -->
-          <section id="welcome">
-
-            <div class="page-header">
-              <h1>
-                  Welcome
-              </h1>                
-            </div>
-            <div class="row-fluid">
-
-              <div class="span6">
-                <p class="lead">
-                  Opendnp3 is the de facto reference implementation of IEEE-1815 (DNP3) provided under the <a href="http://www.apache.org/licenses/LICENSE-2.0.html">Apache License</a>.                  
-                </p>  
-              </div>
-              <div class="span6">
-                  <a href="./decoder" class="btn btn-danger"><i class="icon-white icon-align-left"></i> New: DNP3 Decoder!</a>
-              </div>
-            </div>              
-           </section>
-
-            <!-- Endorsements
-    ================================================== -->
-            <section id="endorsements">                
-                <div class="row-fluid">
-                    <div class="span9">
-                        <blockquote>
-                            <p class="lead blockquote" id="user-quote"></p>              
-                            <a href="#" class="btn btn-primary" onclick="swapQuote()"><i class="icon-white icon-user"></i> Next Story </a>              
-                        </blockquote>                        
-                       
-                    </div>
-                </div>
-            </section>
-
-          <!-- Features
+              <section id="welcome">
+                  <div class="page-header">
+                      <h1>
+                          Welcome
+                      </h1>
+                  </div>
+                  <div class="row-fluid">
+                      <div class="span6">
+                          <p class="lead">
+                              Opendnp3 is the de facto reference implementation of IEEE-1815 (DNP3) provided under the <a href="http://www.apache.org/licenses/LICENSE-2.0.html">Apache License</a>.
+                          </p>
+                      </div>
+                      <div class="span6">
+                          <a href="#decoder" class="btn btn-danger"><i class="icon-white icon-align-left"></i> New: DNP3 Decoder!</a>
+                      </div>
+                  </div>
+              </section>
+              <!-- Endorsements
         ================================================== -->
-          <section id="features">
-            <div class="page-header">
-              <h1>Features</h1>
-            </div>
-            <div class="row-fluid">
-              <ul class="lead">
-                <li>Apache licensed (no cost)</li>
-                <li>Conformance tested using most recent test revisions</li>
-                <li>
-                  Optimized to run on resource constrained embedded systems
-                </li>
-                <li>
-                  Non-blocking, event-driven architecture that scales to OS limits
-                </li>
-                <li>Multi-core support for large frontends and device simulations</li>
-                <li>Simple, consistent programming model that lowers time to market</li>
-              </ul>
-            </div>
-          </section>
+              <section id="endorsements">
+                  <div class="row-fluid">
+                      <div class="span9">
+                          <blockquote>
+                              <p class="lead blockquote" id="user-quote"></p>
+                              <a href="#" class="btn btn-primary" onclick="swapQuote()"><i class="icon-white icon-user"></i> Next Story </a>
+                          </blockquote>
 
-          <section id="quality">
-            <div class="page-header">
-              <h1>Quality</h1>
-            </div>
-            <div class="row-fluid">
-              <ul class="lead">
-                <li>Proven solution with many production deployments</li>
-                <li>Unit test coverage in excess of 90%</li>
-                <li>
-                  Industry leading <a href="http://www.automatak.com/robus">security and robustness</a>
-                </li>
-                <li>Type-safe API that is both safe and easy to use</li>
-              </ul>
-            </div>
-          </section>
-           
-            <section id="documentation">
-                <div class="page-header">
-                    <h1>Documentation</h1>
-                </div>
-                <div class="row-fluid">                    
-                    <ul class="lead">
-                        <li><a href="./docs/guide/current">Guide</a> - Explains building and design (C++ and .NET)</li>
-                        <li><a href="./docs/cpp/current">C++</a> - Doxygen generated reference</li>                      
-                    </ul>
-                </div>
-            </section>
+                      </div>
+                  </div>
+              </section>
+              <!-- Features
+        ================================================== -->
+              <section id="features">
+                  <div class="page-header">
+                      <h1>Features</h1>
+                  </div>
+                  <div class="row-fluid">
+                      <ul class="lead">
+                          <li>Apache licensed (no cost)</li>
+                          <li>Conformance tested using most recent test revisions</li>
+                          <li>
+                              Optimized to run on resource constrained embedded systems
+                          </li>
+                          <li>
+                              Non-blocking, event-driven architecture that scales to OS limits
+                          </li>
+                          <li>Multi-core support for large frontends and device simulations</li>
+                          <li>Simple, consistent programming model that lowers time to market</li>
+                      </ul>
+                  </div>
+              </section>
+              <section id="quality">
+                  <div class="page-header">
+                      <h1>Quality</h1>
+                  </div>
+                  <div class="row-fluid">
+                      <ul class="lead">
+                          <li>Proven solution with many production deployments</li>
+                          <li>Unit test coverage in excess of 90%</li>
+                          <li>
+                              Industry leading <a href="http://www.automatak.com/robus">security and robustness</a>
+                          </li>
+                          <li>Type-safe API that is both safe and easy to use</li>
+                      </ul>
+                  </div>
+              </section>
 
-          <section id="support">
-            <div class="page-header">
-              <h1>Commercial Support</h1>
-            </div>
-            <div class="row-fluid">
-              <p class="lead">
-                Need help? <a href="http://www.automatak.com">Automatak</a> can provide commercial support.
-              </p>
-              <ul class="lead">
-                <li>Hourly-based support</li>
-                <li>Contract software engineering services to integrate opendnp3 into your products</li>
-                <li>On-site dnp3 consultation and training</li>
-                <li>Security and conformance testing on opendnp3 or 3rd party products</li>
-              </ul>
-            </div>
-          </section>
+              <section id="documentation">
+                  <div class="page-header">
+                      <h1>Documentation</h1>
+                  </div>
+                  <div class="row-fluid">
+                      <ul class="lead">
+                          <li><a href="./docs/guide/current">Guide</a> - Explains building and design (C++ and .NET)</li>
+                          <li><a href="./docs/cpp/current">C++</a> - Doxygen generated reference</li>
+                      </ul>
+                  </div>
+              </section>
 
+              <section id="decoder">
+                  <div class="page-header">
+                      <h1>Decoder</h1>
+                  </div>
+                  <div class="row-fluid">
+                      <div class="span9">
+                          <form method="post" target="_blank" action="https://www.automatak.com/cgi-bin/cgi-decoder">
+                              <textarea name="hex" cols="100" rows="4">
+05 64 14 F3 01 00 00 04 0A 3B
+C0 C3 01 3C 02 06 3C 03 06 3C 04 06 3C 01 06 9A 12
+                              </textarea>
+                              <p>                                  
+                              <p><input type="radio" name="mode" value="link" checked />  Interpret input is a LPDU</p>
+                              <p><input type="radio" name="mode" value="transport" /> Interpret input is a TPDU</p>
+                              <p><input type="radio" name="mode" value="app" /> Interpret input is an ASDU</p>
+                              </p>
+                              <p>
+                                  <input class="btn btn-danger" type="submit" value="Decode" />
+                              </p>
+                          </form>
+                      </div>
+                  </div>
+              </section>
 
+                      <section id="support">
+                          <div class="page-header">
+                              <h1>Commercial Support</h1>
+                          </div>
+                          <div class="row-fluid">
+                              <p class="lead">
+                                  Need help? <a href="http://www.automatak.com">Automatak</a> can provide commercial support.
+                              </p>
+                              <ul class="lead">
+                                  <li>Hourly-based support</li>
+                                  <li>Contract software engineering services to integrate opendnp3 into your products</li>
+                                  <li>On-site dnp3 consultation and training</li>
+                                  <li>Security and conformance testing on opendnp3 or 3rd party products</li>
+                              </ul>
+                          </div>
+                      </section>
 
-        </div>
-      </div>
+                  </div>
+          </div>
 
     </div>
 
