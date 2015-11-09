@@ -20,11 +20,15 @@ h1 {
   color: #34EA34;
 }
 
-.app {
+.app-hex {
   color: #42A5F1;
 }
 
-.obj-header {
+.app-header {
+  color: #42A5F1;
+}
+
+.app-obj-header {
   color: #94D4E0;
 }
 
