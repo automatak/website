@@ -8,8 +8,12 @@ h1 {
     margin-left: 20px;
 }
 
-.input {
+.event {
   color: white;
+}
+
+.error {
+  color: #F5597B;
 }
 
 .link {
