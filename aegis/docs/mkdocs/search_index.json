@@ -2,12 +2,12 @@
     "docs": [
         {
             "location": "/", 
-            "text": "Documentation\n\n\nWelcome to the documentation for the Aegis ICS smart fuzzing framework. Aegis currently supports the following protocols:\n\n\n\n\n\n\n\n\nProtocol\n\n\nClient\n\n\nServer\n\n\n\n\n\n\n\n\n\n\nDNP3 (IEEE 1815)\n\n\nx\n\n\nx\n\n\n\n\n\n\nModbus\n\n\nx\n\n\nx\n\n\n\n\n\n\nIEC 60870-5-104\n\n\ncomming soon\n\n\nx", 
+            "text": "Documentation\n\n\nWelcome to the documentation for the Aegis ICS smart fuzzing framework. Aegis currently supports the following protocols:\n\n\n\n\n\n\n\n\nProtocol\n\n\nClient\n\n\nServer\n\n\n\n\n\n\n\n\n\n\nDNP3 (IEEE 1815)\n\n\nx\n\n\nx\n\n\n\n\n\n\nModbus\n\n\nx\n\n\nx\n\n\n\n\n\n\nIEC 60870-5-104\n\n\ncoming soon\n\n\nx", 
             "title": "About"
         }, 
         {
             "location": "/#documentation", 
-            "text": "Welcome to the documentation for the Aegis ICS smart fuzzing framework. Aegis currently supports the following protocols:     Protocol  Client  Server      DNP3 (IEEE 1815)  x  x    Modbus  x  x    IEC 60870-5-104  comming soon  x", 
+            "text": "Welcome to the documentation for the Aegis ICS smart fuzzing framework. Aegis currently supports the following protocols:     Protocol  Client  Server      DNP3 (IEEE 1815)  x  x    Modbus  x  x    IEC 60870-5-104  coming soon  x", 
             "title": "Documentation"
         }, 
         {
