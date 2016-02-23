@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../../img/favicon.ico">
+        
+
+	<title>Modbus - Aegis 0.3.0</title>
+
+        <link href="../../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../../css/font-awesome-4.0.3.css" rel="stylesheet">
+        <link rel="stylesheet" href="../../css/highlight.css">
+        <link href="../../css/base.css" rel="stylesheet">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+        
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <!-- Main title -->
+            <a class="navbar-brand" href="../..">Aegis 0.3.0</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+            
+            
+                <li >
+                    <a href="../..">About</a>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Introduction <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        <li >
+                            <a href="../../intro/fuzzing/">Fuzzing</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../../intro/tools/">Tools</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../../intro/aegis/">Fuzzing with Aegis</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../../install/install/">Installation</a>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Usage <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        <li >
+                            <a href="../../usage/studio/">Studio</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../../usage/console/">Console</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown active">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Protocols <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        <li >
+                            <a href="../dnp3/">DNP3</a>
+                        </li>
+                    
+                        <li class="active">
+                            <a href="./">Modbus</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../iec104/">IEC 60870-5-104</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../../faq/faq/">FAQ</a>
+                </li>
+            
+            
+            </ul>
+
+            <!-- Search, Navigation and Repo links -->
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                        <i class="fa fa-search"></i> Search
+                    </a>
+                </li>
+                <li >
+                    <a rel="next" href="../dnp3/">
+                        <i class="fa fa-arrow-left"></i> Previous
+                    </a>
+                </li>
+                <li >
+                    <a rel="prev" href="../iec104/">
+                        Next <i class="fa fa-arrow-right"></i>
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+            <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#about-modbus-tcp">About Modbus TCP</a></li>
+        
+    
+        <li class="main "><a href="#functions-supported">Functions supported</a></li>
+        
+    
+        <li class="main "><a href="#health-checks">Health checks</a></li>
+        
+    
+        <li class="main "><a href="#parameters">Parameters</a></li>
+        
+    
+        <li class="main "><a href="#procedures">Procedures</a></li>
+        
+    
+        <li class="main "><a href="#test-plans">Test Plans</a></li>
+        
+    
+    </ul>
+</div></div>
+            <div class="col-md-9" role="main">
+
+<h1 id="about-modbus-tcp">About Modbus TCP</h1>
+<p>Vanilla Modbus TCP is a simple protocol that utilizes a basic request-response design. The specification is available from <a href="http://www.modbus.org/">Modbus.org</a>.
+at no charge.</p>
+<p>The protocol transports application layer messages uses a simple envelope called the MBAP. The application layer itself supports function codes that completely
+determine the shape of the contents.</p>
+<p>Modbus servers are easy to fuzz test. You can simply iterate through the various function code models. Modbus clients are more challenging, because any decent
+implementation will only parse response data that appears to be from the request. In other words, you will usually only be testing the parser for that particular
+request. This is very different to a DNP3 that has function  + object semantics that allow for a nearly infinite number of permutations. To thoroughly test a Modbus
+client, the tester must iteratively reconfigure and test every possible function code that can be sent from the master.</p>
+<h1 id="functions-supported">Functions supported</h1>
+<p>The Modbus fuzzer provides good coverage via modeling of the following commonly-used function codes:</p>
+<ul>
+<li>Read coils (0x01)</li>
+<li>Read discrete inputs (0x02)</li>
+<li>Read holding registers (0x03)</li>
+<li>Read input registers (0x04)</li>
+<li>Write single coil (0x05)</li>
+<li>Write single register (0x06)</li>
+<li>Write multiple coils (0x0F)</li>
+<li>Write multiple registers (0x10)</li>
+</ul>
+<p>Future enhancements:</p>
+<ul>
+<li>Additional function code modeling</li>
+<li>Procedures that inject random application layer data</li>
+</ul>
+<h1 id="health-checks">Health checks</h1>
+<p>The Modbus slave tests optionally use a simple READ_COILS request as a health check. This check can be disabled.</p>
+<p>Modbus clients do not send a health check message, as there is no request you can send to a client to stimulate a response. Instead, the fuzzer waits
+for the next request as a health check, and then sends the next test frame with the same transaction id as the request.</p>
+<h1 id="parameters">Parameters</h1>
+<p>Parameters differ for the slave and master tests.</p>
+<p><strong>Slave</strong></p>
+<ul>
+<li>
+<p><strong>unitid</strong> -  The unit id of the modbus slave - This is the most common parameter and must be adjusted for to match the configuration of the target.</p>
+</li>
+<li>
+<p><strong>retries</strong> - Health check retries -  The number of times the health check will be tried before failing the test procedure.</p>
+</li>
+<li>
+<p><strong>timeout</strong> - Read timeout (ms) - The read timeout in milliseconds for the health check</p>
+</li>
+<li>
+<p><strong>healthType</strong> - Health check type - The health check type to use [ReadCoils, None]</p>
+</li>
+<li>
+<p><strong>healthMode</strong> - Health check mode - Enumeration [Before, After] that determines when the health check occurs relative to the test frame.</p>
+</li>
+</ul>
+<p><strong>Master</strong></p>
+<ul>
+<li><strong>timeout</strong> - Read timeout (ms) - The read timeout in milliseconds to wait for a request before failing the test procedure.</li>
+</ul>
+<h1 id="procedures">Procedures</h1>
+<ul>
+<li>
+<p><strong>pdu-request</strong> - Slave PDU request - Sends a large number of malformed and unexpected PDUs to a slave. Can be re-run with multiple seeds.</p>
+</li>
+<li>
+<p><strong>pdu-response</strong> - Master PDU response - Sends a malformed or unexpected response after each request from the master. This procedure should be run 
+for  each request type. Most Modbus masters allow polls to be configured at a arbitrarily high rate. At may not be possible to test write coil/register 
+functionality any way other than manually without the source code.</p>
+</li>
+</ul>
+<h1 id="test-plans">Test Plans</h1>
+<p>Your Aegis installation of contains recommended test plans for Modbus slaves and masters.</p>
+<ul>
+<li>plans\modbus-master.xml</li>
+<li>plans\modbus-slave.xml</li>
+</ul>
+<p>In most cases, the only parameters you need to adjust will be the <em>unitid</em> of the target when testing slaves, and possibly the 
+host (IP) parameter if you're testing an external target. Refer to the parameters section if you need to adjust timeouts or health checking.</p>
+<p>The recommended test plan repeats some of the procedures with different fill or random seeds.</p>
+<p>You should repeat the full master test plan with a high-frequency request for each function code that you can configure to do so. For instance, you might have
+four master configurations that respectively scan:</p>
+<ul>
+<li>Read coils (0x01)</li>
+<li>Read discrete inputs (0x02)</li>
+<li>Read holding registers (0x03)</li>
+<li>Read input registers (0x04)</li>
+</ul>
+<p>If you can configure your software to send control requests, run the suite against those function codes as well.</p></div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            
+                <center>Copyright Automatak LLC 2014-2016</center>
+            
+            <center>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</center>
+        </footer>
+
+        <script src="../../js/jquery-1.10.2.min.js"></script>
+        <script src="../../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../../js/highlight.pack.js"></script>
+        <script>var base_url = '../..';</script>
+        <script data-main="../../mkdocs/js/search.js" src="../../mkdocs/js/require.js"></script>
+        <script src="../../js/base.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            From here you can search these documents. Enter
+                            your search terms below.
+                        </p>
+                        <form role="form">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+                            </div>
+                        </form>
+                        <div id="mkdocs-search-results"></div>
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

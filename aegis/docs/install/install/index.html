@@ -4,18 +4,18 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="dnp3 IEC 104 scada fuzzing">
         
         
-        <link rel="shortcut icon" href="img/favicon.ico">
+        
+        <link rel="shortcut icon" href="../../img/favicon.ico">
         
 
-	<title>Aegis 0.3.0</title>
+	<title>Installation - Aegis 0.3.0</title>
 
-        <link href="./css/bootstrap-custom.min.css" rel="stylesheet">
-        <link href="./css/font-awesome-4.0.3.css" rel="stylesheet">
-        <link rel="stylesheet" href="./css/highlight.css">
-        <link href="./css/base.css" rel="stylesheet">
+        <link href="../../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../../css/font-awesome-4.0.3.css" rel="stylesheet">
+        <link rel="stylesheet" href="../../css/highlight.css">
+        <link href="../../css/base.css" rel="stylesheet">
 
         <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!--[if lt IE 9]>
@@ -42,7 +42,7 @@
             </button>
 
             <!-- Main title -->
-            <a class="navbar-brand" href=".">Aegis 0.3.0</a>
+            <a class="navbar-brand" href="../..">Aegis 0.3.0</a>
         </div>
 
         <!-- Expanded navigation -->
@@ -51,8 +51,8 @@
             <ul class="nav navbar-nav">
             
             
-                <li class="active">
-                    <a href=".">About</a>
+                <li >
+                    <a href="../..">About</a>
                 </li>
             
             
@@ -62,15 +62,15 @@
                     <ul class="dropdown-menu">
                     
                         <li >
-                            <a href="intro/fuzzing/">Fuzzing</a>
+                            <a href="../../intro/fuzzing/">Fuzzing</a>
                         </li>
                     
                         <li >
-                            <a href="intro/tools/">Tools</a>
+                            <a href="../../intro/tools/">Tools</a>
                         </li>
                     
                         <li >
-                            <a href="intro/aegis/">Fuzzing with Aegis</a>
+                            <a href="../../intro/aegis/">Fuzzing with Aegis</a>
                         </li>
                     
                     </ul>
@@ -78,8 +78,8 @@
             
             
             
-                <li >
-                    <a href="install/install/">Installation</a>
+                <li class="active">
+                    <a href="./">Installation</a>
                 </li>
             
             
@@ -89,11 +89,11 @@
                     <ul class="dropdown-menu">
                     
                         <li >
-                            <a href="usage/studio/">Studio</a>
+                            <a href="../../usage/studio/">Studio</a>
                         </li>
                     
                         <li >
-                            <a href="usage/console/">Console</a>
+                            <a href="../../usage/console/">Console</a>
                         </li>
                     
                     </ul>
@@ -106,15 +106,15 @@
                     <ul class="dropdown-menu">
                     
                         <li >
-                            <a href="protocols/dnp3/">DNP3</a>
+                            <a href="../../protocols/dnp3/">DNP3</a>
                         </li>
                     
                         <li >
-                            <a href="protocols/modbus/">Modbus</a>
+                            <a href="../../protocols/modbus/">Modbus</a>
                         </li>
                     
                         <li >
-                            <a href="protocols/iec104/">IEC 60870-5-104</a>
+                            <a href="../../protocols/iec104/">IEC 60870-5-104</a>
                         </li>
                     
                     </ul>
@@ -123,7 +123,7 @@
             
             
                 <li >
-                    <a href="faq/faq/">FAQ</a>
+                    <a href="../../faq/faq/">FAQ</a>
                 </li>
             
             
@@ -136,13 +136,13 @@
                         <i class="fa fa-search"></i> Search
                     </a>
                 </li>
-                <li class="disabled">
-                    <a rel="next" >
+                <li >
+                    <a rel="next" href="../../intro/aegis/">
                         <i class="fa fa-arrow-left"></i> Previous
                     </a>
                 </li>
                 <li >
-                    <a rel="prev" href="intro/fuzzing/">
+                    <a rel="prev" href="../../usage/studio/">
                         Next <i class="fa fa-arrow-right"></i>
                     </a>
                 </li>
@@ -156,42 +156,44 @@
             <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
     
-        <li class="main active"><a href="#documentation">Documentation</a></li>
+        <li class="main active"><a href="#installation">Installation</a></li>
+        
+    
+        <li class="main "><a href="#licensing">Licensing</a></li>
         
     
     </ul>
 </div></div>
             <div class="col-md-9" role="main">
 
-<h1 id="documentation">Documentation</h1>
-<p>Welcome to the documentation for the Aegis ICS smart fuzzing framework. Aegis currently supports the following protocols:</p>
-<table>
-<thead>
-<tr>
-<th>Protocol</th>
-<th>Client</th>
-<th>Server</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>DNP3 (IEEE 1815)</td>
-<td>x</td>
-<td>x</td>
-</tr>
-<tr>
-<td>Modbus</td>
-<td>x</td>
-<td>x</td>
-</tr>
-<tr>
-<td>IEC 60870-5-104</td>
-<td>comming soon</td>
-<td>x</td>
-</tr>
-</tbody>
-</table>
-<p><img alt="Aegis" src="./img/aegis_emblem.png" /></p></div>
+<h1 id="installation">Installation</h1>
+<p>Aegis is distributed as a windows MSI installer. The requirements for installation are as follows:</p>
+<ul>
+<li>Windows Vista, 7, 8, or 10</li>
+<li>.NET runtime 4.5 (not installed by installer) </li>
+<li>512 MB RAM</li>
+<li>Aegis will not install or run in a virtual machine without a special license file</li>
+</ul>
+<p>By default, the installer will choose a directory like the following for the installation path.</p>
+<pre><code class="sh">C:\Program Files (x86)\Automatak\Aegis Fuzzer
+</code></pre>
+
+<p>The executables are installed in the <em>bin</em> sub-directory of this folder. After a successful installation you should be able to 
+run the AegisStudio link created in your start menu's program files <em>All Programs &gt;&gt; Automatak &gt;&gt; Aegis Fuzzer &gt;&gt; AegisStudio</em>.</p>
+<p>If you have never installed a license, or your license is no longer invalid, you should see the licensing splash screen:</p>
+<p><img alt="LicenseFailScreen" src="../../img/license_fail_screen.jpg" /></p>
+<h1 id="licensing">Licensing</h1>
+<p>Aegis is distributed and licensed under a subscription model. Per-seat licenses are bound to particular machines via a combination
+of hardware attributes. To license your Aegis installation, follow these steps:</p>
+<ol>
+<li>Install Aegis and run AegisStudio</li>
+<li>When the license splash screen appears, generate a hardware ID file (hid) and save it somewhere.</li>
+<li>Email the hardware ID to <strong>licensing@automatak.com</strong> along with your customer info.</li>
+<li>Place the license file in the reply in the <strong>bin</strong> sub-directory of your Aegis installation.</li>
+</ol>
+<p>Your Aegis installation will now work for the term of your subscription. You will receive a warning 2 weeks prior to the expiration
+of your subscription to get a new license file.</p>
+<p>Note: Both the Studio and the Console runners use the same licensing mechanism.</p></div>
         </div>
 
         <footer class="col-md-12">
@@ -202,12 +204,12 @@
             <center>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</center>
         </footer>
 
-        <script src="./js/jquery-1.10.2.min.js"></script>
-        <script src="./js/bootstrap-3.0.3.min.js"></script>
-        <script src="./js/highlight.pack.js"></script>
-        <script>var base_url = '.';</script>
-        <script data-main="./mkdocs/js/search.js" src="./mkdocs/js/require.js"></script>
-        <script src="./js/base.js"></script>
+        <script src="../../js/jquery-1.10.2.min.js"></script>
+        <script src="../../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../../js/highlight.pack.js"></script>
+        <script>var base_url = '../..';</script>
+        <script data-main="../../mkdocs/js/search.js" src="../../mkdocs/js/require.js"></script>
+        <script src="../../js/base.js"></script>
 
         <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
             <div class="modal-dialog">

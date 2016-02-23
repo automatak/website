@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../../img/favicon.ico">
+        
+
+	<title>DNP3 - Aegis 0.3.0</title>
+
+        <link href="../../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../../css/font-awesome-4.0.3.css" rel="stylesheet">
+        <link rel="stylesheet" href="../../css/highlight.css">
+        <link href="../../css/base.css" rel="stylesheet">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+        
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <!-- Main title -->
+            <a class="navbar-brand" href="../..">Aegis 0.3.0</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+            
+            
+                <li >
+                    <a href="../..">About</a>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Introduction <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        <li >
+                            <a href="../../intro/fuzzing/">Fuzzing</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../../intro/tools/">Tools</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../../intro/aegis/">Fuzzing with Aegis</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../../install/install/">Installation</a>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Usage <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        <li >
+                            <a href="../../usage/studio/">Studio</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../../usage/console/">Console</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown active">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Protocols <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        <li class="active">
+                            <a href="./">DNP3</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../modbus/">Modbus</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../iec104/">IEC 60870-5-104</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../../faq/faq/">FAQ</a>
+                </li>
+            
+            
+            </ul>
+
+            <!-- Search, Navigation and Repo links -->
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                        <i class="fa fa-search"></i> Search
+                    </a>
+                </li>
+                <li >
+                    <a rel="next" href="../../usage/console/">
+                        <i class="fa fa-arrow-left"></i> Previous
+                    </a>
+                </li>
+                <li >
+                    <a rel="prev" href="../modbus/">
+                        Next <i class="fa fa-arrow-right"></i>
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+            <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#about-dnp3">About DNP3</a></li>
+        
+    
+        <li class="main "><a href="#functions-supported">Functions supported</a></li>
+        
+    
+        <li class="main "><a href="#health-checks">Health checks</a></li>
+        
+    
+        <li class="main "><a href="#handshaking">Handshaking</a></li>
+        
+    
+        <li class="main "><a href="#parameters">Parameters</a></li>
+        
+    
+        <li class="main "><a href="#procedures">Procedures</a></li>
+        
+    
+        <li class="main "><a href="#test-plans">Test Plans</a></li>
+        
+    
+    </ul>
+</div></div>
+            <div class="col-md-9" role="main">
+
+<h1 id="about-dnp3">About DNP3</h1>
+<p>DNP3 is a complex SCADA protocol with 3 layers.</p>
+<ul>
+<li>link</li>
+<li>transport</li>
+<li>application</li>
+</ul>
+<p>The link and transport layers for DNP3 are identical for the client (master) and server (outstation). The same test cases
+can be applied to both at these layers.</p>
+<p>The application layer contains a myriad of object types defined by a <em>group</em> and <em>variation</em>. The semantic meaning of these objects depends on
+the <em>function code</em> (e.g. READ, WRITE, OPERATE) and the receiver (client/server).</p>
+<p>DNP3 has an <em>unsolicited</em> reporting mode whereby the outstation initiates communications. This is very useful for testing the master response parsing
+without having to wait for requests.</p>
+<h1 id="functions-supported">Functions supported</h1>
+<p>The DNP3 fuzzer provides good coverage of the DNP3 link, transport, and application layers. Specialized test cases are provided for each layer
+and some targeted test cases are provided for known failure points within layers such as transport reassembly buffer overflows.</p>
+<p>There are some known gaps within the current version. Notably the following object groups are not explicitly modeled:</p>
+<ul>
+<li>Group 0 - Device Attributes</li>
+<li>Group 70 - File transfer / free-form qualifier 0x5B</li>
+<li>Group 80 - Datasets </li>
+<li>Group 120 - Secure authentication objects</li>
+</ul>
+<p>This is not to say that Aegis cannot find bugs related to this functionality. The <em>app-rand-request</em> and <em>app-rand-unsol</em> procedures produce pseudo-random
+ASDUs with many unknown function codes and qualifiers. It is just less likely that bugs in these objects will be found because they are not yet directly modeled
+in the <em>app-request</em> and <em>app-unsol</em> procedures.</p>
+<h1 id="health-checks">Health checks</h1>
+<p>DNP3 tests optionally use a feature of the link layer to identify if a target has failed. After every attack frame, the fuzzer sends a link layer request
+and expects a response.</p>
+<p>The fuzzer no longer validates the response, it just expects some valid link layer frame to indicate the target is still alive. You can configure two types of health
+checks:</p>
+<ul>
+<li>LINK_STATUS (default)</li>
+<li>RESET_LINK_STATES</li>
+</ul>
+<p>Most implementations will work well with the defaults. Some non-conformant implementations may require the alternative health type.</p>
+<h1 id="handshaking">Handshaking</h1>
+<p>The fuzzer can perform some automatic handshaking in response to certain messages. This keeps the target happy, particularly during the master startup sequence.</p>
+<ul>
+<li>UNCONFIRMED_USER_DATA - The fuzzer parses the application layer header and if the frame is any function code other than RESPONSE or UNSOLICITED_RESPONSE it responds with a NULL application response with the same sequence number.</li>
+<li>CONFIRMED_USER_DATA - The fuzzer first responses with a link layer ACK and then handles the message the same as UNCONFIRMED.</li>
+<li>RESET_LINK_STATES - The fuzzer responses with an ACK.</li>
+<li>REQUEST_LINK_STATES - The fuzzer responses with a LINK_STATUS.</li>
+</ul>
+<h1 id="parameters">Parameters</h1>
+<p>A number of DNP3 specific parameters are available at the module level.</p>
+<ul>
+<li>
+<p><strong>src</strong> -  Source address - The link-layer source address. This is address of the fuzzer itself.</p>
+</li>
+<li>
+<p><strong>dest</strong> - Destination address - The link-layer source address. This is address of the fuzzer itself, i.e. who you are pretending to be.</p>
+</li>
+<li>
+<p><strong>master</strong> - Link-layer master bit - This setting configures the link layer 'master' bit for fuzzing masters or outstations (default). </p>
+</li>
+<li>
+<p><strong>retries</strong> - Number of health-check retries - The number of attempts the fuzzer will make to query the target with a health check before deciding it has failed.</p>
+</li>
+<li>
+<p><strong>timeout</strong> - Health-check timeout - The timeout (in milliseconds) for reading a link layer frame from the target during a health-check.</p>
+</li>
+<li>
+<p><strong>healthType</strong> - Health-check type -  Enumeration [LinkStatus, ResetLink, None] that defines what kind of health check to use.</p>
+</li>
+<li>
+<p><strong>healthMode</strong> - Health-check mode - Enumeration [Before, After] that determines when the health check occurs relative to the test frame.</p>
+</li>
+</ul>
+<h1 id="procedures">Procedures</h1>
+<ul>
+<li>
+<p><strong>link</strong> - Link layer (outstation or master) - Fuzzes the link layer using many permutations of control octets, lengths, and special addresses.</p>
+</li>
+<li>
+<p><strong>transport</strong> - Transport layer (outstation or master) - Fuzzes the transport layer with unexpected lengths, sequence numbers, and over-sized ASDUs.</p>
+</li>
+<li>
+<p><strong>app-request</strong> - Application layer requests (outstation) - Fuzzes the application layer with a large number of function codes, qualifier codes, and 
+malformed contents. Explicitly sends start/stop/count values likely to cause integer overflows.</p>
+</li>
+<li>
+<p><strong>app-unsol</strong> - Application layer unsolicited (master) - Fuzzes the application layer with a large number of unsolicited responses (master)</p>
+</li>
+<li>
+<p><strong>rand-app-request</strong> - Randomized application layer requests (outstation) - Fuzzes the application layer with semi-random requests. Capable of 
+finding some bugs in functions, qualifiers, and objects not explicitly modeled elsewhere.</p>
+</li>
+<li>
+<p><strong>rand-app-unsol</strong> - Randomized application layer unsolicited responses (master) - Fuzzes the application layer with semi-random unsolicited
+responses. Capable of finding some bugs in qualifiers and objects not explicitly modeled elsewhere.</p>
+</li>
+<li>
+<p><strong>app-octet-unsol</strong> - Unsolicited 0-length octet strings (groups 110-113) (master) - Tests for a specific, but common, bug in the handling of 
+Group 110-113 variation 0</p>
+</li>
+<li>
+<p><strong>app-octet-write</strong> - Unsolicited 0-length octet strings (groups 110-113) (outstation) - Similar to <em>app-octet-unsol</em>, but performs a WRITE of a 
+large numbers of 0-length octet string headers</p>
+</li>
+</ul>
+<h1 id="test-plans">Test Plans</h1>
+<p>Your Aegis installation of contains recommended test plans for DNP3 outstations and masters.</p>
+<ul>
+<li>plans\dnp3-master.xml</li>
+<li>plans\dnp3-outstation.xml</li>
+</ul>
+<p>In most cases, the only parameters you need to adjust will be the source and destination link layer addresses of the target, and possibly the 
+host (IP) parameter if you're testing an external target. Refer to the parameters section if you need to adjust timeouts or health checking.</p>
+<p>The recommended test plan repeats some of the procedures with different fill or random seeds. It is recommended that you follow the plan for maximum efficacy, but
+on slow DNP3 implementations, this could take a long time. Some DNP3 implementations can handle hundreds of test cases per second, while others only seem to handle
+a couple dozen. It may be worth figuring out why the implementation is slow to respond to health checks or requests. You might consider running additional random seeds 
+besides zero if your have enough time.</p>
+<p>The last test case in each plan generates random application layer data within appropriate encapsulation. It is arbitrarily set to 1,000,000
+iterations. Run as many iterations as you can tolerate with the speed of your device.</p></div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            
+                <center>Copyright Automatak LLC 2014-2016</center>
+            
+            <center>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</center>
+        </footer>
+
+        <script src="../../js/jquery-1.10.2.min.js"></script>
+        <script src="../../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../../js/highlight.pack.js"></script>
+        <script>var base_url = '../..';</script>
+        <script data-main="../../mkdocs/js/search.js" src="../../mkdocs/js/require.js"></script>
+        <script src="../../js/base.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            From here you can search these documents. Enter
+                            your search terms below.
+                        </p>
+                        <form role="form">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+                            </div>
+                        </form>
+                        <div id="mkdocs-search-results"></div>
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
