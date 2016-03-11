@@ -192,27 +192,27 @@
 <li>Launch independent test windows</li>
 </ul>
 <h1 id="adding-suites">Adding suites</h1>
-<p><em>Test Suites</em> are collections of test procedures. They act as folders in which you can organize your tests. Aegis comes with 
+<p><em>Test Suites</em> are collections of test procedures. They act as folders in which you can organize your tests. Aegis comes with
 recommended test suites for each protocol that you can find in the <em>tests</em> subdirectory of your install, typically:</p>
 <pre><code class="sh">C:\Program Files (x86)\Automatak\Aegis Fuzzer\tests
 </code></pre>
 
 <p>When the Studio first starts up, the tree view is empty. You can load a configuration via the <em>File</em> menu or you
 can define an initial test suite by clicking <em>New</em>.</p>
-<p><img alt="AddModule" src="../../../img/add_module.jpg" /></p>
+<p><img alt="AddModule" src="../../img/add_module.jpg" /></p>
 <p>You are presented with a set of configuration options that are applied to every procedure within the suite. A description of each option is available in a tooltip by hovering over the option name.</p>
 <p>The first grouping, <em>channel</em>, allows you to configure the communication channel used for every test in the suite. You can double click on any option (marked by a gear)
-to change the value. Values that are modified from their default settings are marked in <strong>bold</strong>. You can return any setting to its default by 
+to change the value. Values that are modified from their default settings are marked in <strong>bold</strong>. You can return any setting to its default by
 right clicking and selecting <em>Reset to default</em>.</p>
-<p><img alt="ChangeSettings" src="../../../img/change_settings.jpg" /></p>
+<p><img alt="ChangeSettings" src="../../img/change_settings.jpg" /></p>
 <h1 id="adding-procedures">Adding procedures</h1>
-<p><em>Procedures</em> are specific sets of test cases that can be individually configured and run. They appear in the main Studio form as a two circulating arrows 
+<p><em>Procedures</em> are specific sets of test cases that can be individually configured and run. They appear in the main Studio form as a two circulating arrows
 underneath suite folder(s). You can add a procedure to a suite by right clicking on a suite node in the tree and then clicking <em>Add Procedure</em>.</p>
-<p><img alt="AddProcedure" src="../../../img/add_procedure.jpg" /></p>
+<p><img alt="AddProcedure" src="../../img/add_procedure.jpg" /></p>
 <p>You can reorder procedures within a suite by dragging and dropping the procedure nodes onto each other.</p>
 <h1 id="generic-options">Generic options</h1>
 <p>Each test procedure has a number of generic options that can be configured in addition to any per-procedure options.</p>
-<p><img alt="GenericOptions" src="../../../img/generic_options.jpg" /></p>
+<p><img alt="GenericOptions" src="../../img/generic_options.jpg" /></p>
 <ul>
 <li><strong>reopen</strong> - Close and reopen the channel before every test. This is useful in stream-based protocols where an invalid message permanently corrupts the session.</li>
 <li><strong>start</strong> - Start testing a particular test case id.</li>
@@ -226,13 +226,13 @@ underneath suite folder(s). You can add a procedure to a suite by right clicking
 in the install-included test plans.</p>
 <h1 id="running-tests">Running Tests</h1>
 <p>You can launch a suite by right clicking on a test suite and selecting <em>Open</em>.</p>
-<p><img alt="RunSuite" src="../../../img/run_suite.jpg" /></p>
+<p><img alt="RunSuite" src="../../img/run_suite.jpg" /></p>
 <p>This action launches an independent test window with a list box of all the tests in the suite.  By default, all procedures are
 enabled to run in sequential order. You can disable individual test procedures by right clicking and selecting <em>Disable</em>. Clicking
 the <em>Run</em> button initiates the test sequence. You cannot adjust any parameters while the tests are running.</p>
 <h1 id="log-window">Log Window</h1>
 <p>The top panel is a running log with a built-in protocol decoder. You can right-click the log window to see available options.</p>
-<p><img alt="Logging" src="../../../img/logging.jpg" /></p>
+<p><img alt="Logging" src="../../img/logging.jpg" /></p>
 <ul>
 <li>Pause - Pause the window so that contents are not overwritten. This action does not pause the test itself.</li>
 <li>Resume - Resume logging to the window.</li>
@@ -241,8 +241,8 @@ the <em>Run</em> button initiates the test sequence. You cannot adjust any param
 </ul>
 <p>Double-clicking the log window toggles the pauses or resumes logging. A paused window displays a red border.</p>
 <h1 id="procedure-info">Procedure Info</h1>
-<p>An icon is displayed in the list box for each test procedure indicating its current state. </p>
-<p><img alt="ProgressIcons" src="../../../img/progress_icons.jpg" /></p>
+<p>An icon is displayed in the list box for each test procedure indicating its current state.</p>
+<p><img alt="ProgressIcons" src="../../img/progress_icons.jpg" /></p>
 <ul>
 <li>The first column displays the current state of the procedure. <em>{ Pending, Running, Failed, Canceled, Success }</em></li>
 <li>You can exclude individual tests from the test sequence by right-clicking and selecting <em>Disable</em>.</li>
@@ -254,7 +254,7 @@ not modify the values in the XML configuration</strong>.  If you want to permane
 <h1 id="progress-indicators">Progress Indicators</h1>
 <p>There are a number of indicators of progress available.  While a test is running, a progress bar is updated that displays the current test case#/total,
 current tests/sec, and an estimated time to completion.</p>
-<p><img alt="Progress" src="../../../img/progress.jpg" /></p></div>
+<p><img alt="Progress" src="../../img/progress.jpg" /></p></div>
         </div>
 
         <footer class="col-md-12">
