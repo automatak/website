@@ -174,7 +174,10 @@
         <li class="main "><a href="#parameters">Parameters</a></li>
         
     
-        <li class="main "><a href="#procedures">Procedures</a></li>
+        <li class="main "><a href="#procedures-outstation">Procedures (outstation)</a></li>
+        
+    
+        <li class="main "><a href="#procedures-master">Procedures (master)</a></li>
         
     
         <li class="main "><a href="#test-plans">Test Plans</a></li>
@@ -227,22 +230,28 @@ TESTFR CON=1.</p>
 <p><strong>timeout</strong> - Health-check timeout - The timeout (in milliseconds) for reading a link layer frame from the target during a health-check.</p>
 </li>
 </ul>
-<h1 id="procedures">Procedures</h1>
+<h1 id="procedures-outstation">Procedures (outstation)</h1>
 <ul>
-<li><strong>app-request</strong> - Application layer requests (outstation) - Fuzzes the application layer with all control direction TypeIds with mutated and invalid contents.</li>
-<li><strong>rand-app-request</strong> - Application layer requests (outstation) - Fuzzes the application layer with random TypeIds with random contents.</li>
+<li><strong>app-request</strong> - Fuzzes the server's application layer with mutated forms of request TypeIds.</li>
+<li><strong>rand-app-request</strong> - Fuzzes the server's application layer with random semi-random requests.</li>
+</ul>
+<h1 id="procedures-master">Procedures (master)</h1>
+<ul>
+<li><strong>app-response</strong> - Fuzzes the client's application layer with mutated forms of response TypeIds</li>
+<li><strong>rand-app-response</strong> - Fuzzes the client's application layer with random semi-random responses.</li>
 </ul>
 <h1 id="test-plans">Test Plans</h1>
-<p>Your Aegis installation of contains recommended test plans for DNP3 outstations and masters.</p>
+<p>Your Aegis installation of contains recommended test plans for both outstations and masters.</p>
 <ul>
 <li>plans\iec104-outstation.xml</li>
+<li>plans\iec104-master.xml</li>
 </ul>
 <p>In most cases, the only parameter you need to adjust will be the common address.</p>
 <p>The recommended test plan repeats some of the procedures with different fill or random seeds. It is recommended that you follow the plan for maximum efficacy, but
 on slow implementations, this could take a long time. Some implementations can handle hundreds of test cases per second, while others only seem to handle
-a couple dozen. It may be worth figuring out why the implementation is slow to respond to health checks or requests. You might consider running additional random seeds 
+a couple dozen. It may be worth figuring out why the implementation is slow to respond to health checks or requests. You might consider running additional random seeds
 besides zero if your have enough time.</p>
-<p>The last test case in each plan generates random application layer data within appropriate encapsulation. It is arbitrarily set to 250,000 iterations. Run as many 
+<p>The last test case in each plan generates random application layer data within appropriate encapsulation. It is arbitrarily set to 250,000 iterations. Run as many
 iterations as you can tolerate with the speed of your device.</p></div>
         </div>
 
