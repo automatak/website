@@ -180,6 +180,9 @@
         <li class="main "><a href="#procedures-master">Procedures (master)</a></li>
         
     
+        <li class="main "><a href="#procedures-either-master-or-outstation">Procedures (either master or outstation)</a></li>
+        
+    
         <li class="main "><a href="#test-plans">Test Plans</a></li>
         
     
@@ -192,28 +195,28 @@
 of two layers:</p>
 <ul>
 <li>APCI - Application Protocol Control Information used to denote frame types for 104's network mode.</li>
-<li>ASDU - Application Service Data Unit that containings applicaiton layer frames. This is the same for 101 and 104.</li>
+<li>ASDU - Application Service Data Unit that contains application layer frames. This is the same for 101 and 104.</li>
 </ul>
 <p>The application layer defines a number of <em>Type Ids</em> which can be thought of as function codes. They define the format of the data that follows. Unlike in DNP3,
 104 ASDUs can only contain one type of data.</p>
 <h1 id="functions-supported">Functions supported</h1>
-<p>The 104 fuzzer provides support for every TypeId defined in the standard. This doesn't guarantee that all possible bugs will be found, but it means there are unlikely to
-be any significant gaps in the test coverage.</p>
+<p>The 104 fuzzer provides support for every TypeId defined in the standard. This doesn't guarantee that all possible bugs will be found, but it does mean there that a significant portion
+of the application layer is stressed by the fuzzer.</p>
 <h1 id="health-checks">Health checks</h1>
-<p>The fuzzer tests that the device under test (DUT) is still actively communicating by sending a U-format frame with TESTFR ACT=1. It expects the remote side to answer with
-TESTFR CON=1.</p>
+<p>The fuzzer queries the device under test (DUT) by sending a U-format frame with TESTFR ACT and expects to receive TESTFR CON in response.</p>
 <h1 id="conformance-and-parameters">Conformance and parameters</h1>
 <p>Some parameters in IEC 104 have configurable sizes that both sides must agree upon. Aegis uses the following values:</p>
 <ul>
-<li>A two-octet Cause of Tranmission field is used where the one-byte sender address sub-field is utilized.</li>
+<li>A two-octet Cause of Transmission field is used where the one-byte sender address sub-field is utilized.</li>
 <li>A two-octet Common Address field is used.</li>
 <li>A three-octet Information Object Address field is used.</li>
 </ul>
-<p>There are the defaults for many systems, and the only settings that work with Wireshark.</p>
+<p>There are the defaults for almost all systems, and the only settings that work with Wireshark.</p>
 <h1 id="handshaking">Handshaking</h1>
 <ul>
-<li>The outstation fuzzer automatically advances and increments the Transmit and Receive Sequence Numbers in the APCI.</li>
-<li>The outstation fuzzer will send START_DT ACT=1 and expect START_DT CON=1 before running any tests.</li>
+<li>The fuzzer automatically advances and increments the Transmit and Receive Sequence Numbers in the APCI.</li>
+<li>The fuzzer will send (outstation) or receive (master) START_DT automatically.</li>
+<li>The fuzzer always answers TESTFR ACT with TESTFR CON.</li>
 </ul>
 <h1 id="parameters">Parameters</h1>
 <ul>
@@ -239,6 +242,12 @@ TESTFR CON=1.</p>
 <ul>
 <li><strong>app-response</strong> - Fuzzes the client's application layer with mutated forms of response TypeIds</li>
 <li><strong>rand-app-response</strong> - Fuzzes the client's application layer with random semi-random responses.</li>
+</ul>
+<h1 id="procedures-either-master-or-outstation">Procedures (either master or outstation)</h1>
+<p>The following procedures send frames with malformed APCI. You will almost certainly need to run each test case in its own TCP session (i.e. tests-per-session == 1).</p>
+<ul>
+<li><strong>apci</strong> - Sends malformed I, U, or S frames with disallowed lengths and a configurable random payload length.</li>
+<li><strong>random-frame</strong> - Sends a completely random frame prepended with the 0x68 start characters.</li>
 </ul>
 <h1 id="test-plans">Test Plans</h1>
 <p>Your Aegis installation of contains recommended test plans for both outstations and masters.</p>

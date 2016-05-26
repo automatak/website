@@ -214,13 +214,15 @@ underneath suite folder(s). You can add a procedure to a suite by right clicking
 <p>Each test procedure has a number of generic options that can be configured in addition to any per-procedure options.</p>
 <p><img alt="GenericOptions" src="../../img/generic_options.jpg" /></p>
 <ul>
-<li><strong>reopen</strong> - Close and reopen the channel before every test. This is useful in stream-based protocols where an invalid message permanently corrupts the session.</li>
+<li><strong>tests-per-session</strong> - The number of tests to run in a single communication session. Setting this value to 1 resets the connection for every test.</li>
 <li><strong>start</strong> - Start testing a particular test case id.</li>
 <li><strong>count</strong> - Limit the number of test cases to the specified count.</li>
 <li><strong>repeats</strong> - Repeat the specified test sequence (all settings) more than once. Useful for stressing non-fatal or non-deterministic bugs.</li>
+<li><strong>delay</strong> - The number of milliseconds to wait between test cases. Also useful for delays between connection requests.</li>
 <li><strong>fill</strong> - Specifics the source the "fill" value for non-random constant data.</li>
 <li><strong>constant</strong> - The byte value to use for constant-fill mode.</li>
 <li><strong>seed</strong> - The seed to use for the pseudo-random number generator.</li>
+<li><strong>pretests</strong> - Some modules implement handshaking to run at the beginning of each communication session called "pretests". Setting this value to false disables this handshaking.</li>
 </ul>
 <p><em>Start</em> and <em>count</em> are the most frequently adjusted parameters by the user. Most of the other values already have reasonable defaults
 in the install-included test plans.</p>
